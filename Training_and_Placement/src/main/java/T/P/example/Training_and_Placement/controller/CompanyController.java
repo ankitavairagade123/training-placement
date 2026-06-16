@@ -1,7 +1,7 @@
 package T.P.example.Training_and_Placement.controller;
 
-import T.P.example.Training_and_Placement.Entity.Company;
-import T.P.example.Training_and_Placement.dto.CompanyDTO;
+import T.P.example.Training_and_Placement.dto.CompanyRequestDTO;
+import T.P.example.Training_and_Placement.dto.CompanyResponseDTO;
 import T.P.example.Training_and_Placement.service.CompanyService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,20 +18,22 @@ public class CompanyController {
     private CompanyService companyService;
 
     @PostMapping
-    public ResponseEntity<Company> saveCompany(@Valid @RequestBody CompanyDTO companyDTO) {
-        Company savedCompany = companyService.saveCompany(companyDTO);
+    public ResponseEntity<CompanyResponseDTO> saveCompany(
+            @Valid @RequestBody CompanyRequestDTO companyRequestDTO) {
 
-        return ResponseEntity.ok(savedCompany);
+        CompanyResponseDTO response = companyService.saveCompany(companyRequestDTO);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public List<Company> getAllCompanies() {
-        return companyService.getAllCompanies();
+    public ResponseEntity<List<CompanyResponseDTO>> getAllCompanies() {
+        List<CompanyResponseDTO> companies = companyService.getAllCompanies();
+        return ResponseEntity.ok(companies);
     }
 
     @DeleteMapping("/{id}")
-    public String deleteCompany(@PathVariable Long id) {
+    public ResponseEntity<String> deleteCompany(@PathVariable Long id) {
         companyService.deleteCompany(id);
-        return "Company deleted successfully";
+        return ResponseEntity.ok("Company deleted successfully");
     }
 }
