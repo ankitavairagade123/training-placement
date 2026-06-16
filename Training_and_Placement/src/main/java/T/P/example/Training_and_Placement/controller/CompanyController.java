@@ -5,6 +5,7 @@ import T.P.example.Training_and_Placement.dto.CompanyDTO;
 import T.P.example.Training_and_Placement.service.CompanyService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,16 +18,10 @@ public class CompanyController {
     private CompanyService companyService;
 
     @PostMapping
-    public Company saveCompany(
-            @Valid @RequestBody CompanyDTO companyDTO) {
-        Company company = Company.builder()
-                .id(dto.getId())
-                .companyName(dto.getCompanyName())
-                .address(dto.getAddress())
-                .pincode(dto.getPincode())
-                .build();
+    public ResponseEntity<Company> saveCompany(@Valid @RequestBody CompanyDTO companyDTO) {
+        Company savedCompany = companyService.saveCompany(companyDTO);
 
-        return companyRepository.save(company);;
+        return ResponseEntity.ok(savedCompany);
     }
 
     @GetMapping
