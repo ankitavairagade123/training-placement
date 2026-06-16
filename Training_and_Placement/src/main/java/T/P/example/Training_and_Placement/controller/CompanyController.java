@@ -1,7 +1,9 @@
 package T.P.example.Training_and_Placement.controller;
 
-import T.P.example.Training_and_Placement.Model.Company;
+import T.P.example.Training_and_Placement.Entity.Company;
+import T.P.example.Training_and_Placement.dto.CompanyDTO;
 import T.P.example.Training_and_Placement.service.CompanyService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +17,16 @@ public class CompanyController {
     private CompanyService companyService;
 
     @PostMapping
-    public Company saveCompany(@RequestBody Company company) {
-        return companyService.saveCompany(company);
+    public Company saveCompany(
+            @Valid @RequestBody CompanyDTO companyDTO) {
+        Company company = Company.builder()
+                .id(dto.getId())
+                .companyName(dto.getCompanyName())
+                .address(dto.getAddress())
+                .pincode(dto.getPincode())
+                .build();
+
+        return companyRepository.save(company);;
     }
 
     @GetMapping

@@ -1,6 +1,6 @@
 package T.P.example.Training_and_Placement.service;
 
-import T.P.example.Training_and_Placement.Model.Company;
+import T.P.example.Training_and_Placement.Entity.Company;
 import T.P.example.Training_and_Placement.repository.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
