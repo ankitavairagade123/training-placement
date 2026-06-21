@@ -1,9 +1,8 @@
-package T.P.example.Training_and_Placement.controller;
+package T_And_P.Training_and_Placement.controller;
 
-import T.P.example.Training_and_Placement.dto.CompanyRequestDTO;
-import T.P.example.Training_and_Placement.dto.CompanyResponseDTO;
-import T.P.example.Training_and_Placement.service.CompanyService;
-import jakarta.validation.Valid;
+import T_And_P.Training_and_Placement.dto.CompanyRequestDTO;
+import T_And_P.Training_and_Placement.dto.CompanyResponseDTO;
+import T_And_P.Training_and_Placement.service.CompanyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

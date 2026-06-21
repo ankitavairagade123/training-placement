@@ -1,4 +1,4 @@
-package T.P.example.Training_and_Placement.exception;
+package T_And_P.Training_and_Placement.exception;
 
 
 import org.springframework.context.support.DefaultMessageSourceResolvable;

@@ -1,4 +1,4 @@
-package T.P.example.Training_and_Placement;
+package T_And_P.Training_and_Placement;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

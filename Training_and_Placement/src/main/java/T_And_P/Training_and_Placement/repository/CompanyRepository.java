@@ -1,7 +1,7 @@
-package T.P.example.Training_and_Placement.repository;
+package T_And_P.Training_and_Placement.repository;
 
-import T.P.example.Training_and_Placement.Entity.Company;
-import T.P.example.Training_and_Placement.bean.CompanyBean;
+import T_And_P.Training_and_Placement.entity.Company;
+import T_And_P.Training_and_Placement.bean.CompanyBean;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,4 +1,4 @@
-package T.P.example.Training_and_Placement.Entity;
+package T_And_P.Training_and_Placement.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

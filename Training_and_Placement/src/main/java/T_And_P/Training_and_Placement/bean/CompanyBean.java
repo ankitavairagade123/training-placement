@@ -1,4 +1,4 @@
-package T.P.example.Training_and_Placement.bean;
+package T_And_P.Training_and_Placement.bean;
 
 public interface CompanyBean {
 

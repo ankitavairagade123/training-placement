@@ -1,4 +1,4 @@
-package T.P.example.Training_and_Placement;
+package T_And_P.P.example.Training_and_Placement;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

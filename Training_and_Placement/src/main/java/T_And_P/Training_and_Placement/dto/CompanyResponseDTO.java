@@ -1,4 +1,4 @@
-package T.P.example.Training_and_Placement.dto;
+package T_And_P.Training_and_Placement.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,13 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CompanyRequestDTO {
+public class CompanyResponseDTO {
 
     private Long id;
-
     private String companyName;
-
     private String address;
-
     private Long pincode;
 }

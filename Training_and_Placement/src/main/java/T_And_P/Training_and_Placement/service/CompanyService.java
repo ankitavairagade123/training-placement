@@ -1,11 +1,11 @@
-package T.P.example.Training_and_Placement.service;
+package T_And_P.Training_and_Placement.service;
 
-import T.P.example.Training_and_Placement.Entity.Company;
-import T.P.example.Training_and_Placement.bean.CompanyBean;
-import T.P.example.Training_and_Placement.dto.CompanyRequestDTO;
-import T.P.example.Training_and_Placement.dto.CompanyResponseDTO;
-import T.P.example.Training_and_Placement.exception.CompanyException;
-import T.P.example.Training_and_Placement.repository.CompanyRepository;
+import T_And_P.Training_and_Placement.entity.Company;
+import T_And_P.Training_and_Placement.bean.CompanyBean;
+import T_And_P.Training_and_Placement.dto.CompanyRequestDTO;
+import T_And_P.Training_and_Placement.dto.CompanyResponseDTO;
+import T_And_P.Training_and_Placement.exception.CompanyException;
+import T_And_P.Training_and_Placement.repository.CompanyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
