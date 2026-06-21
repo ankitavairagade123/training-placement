@@ -1,11 +1,12 @@
 package T_And_P.Training_and_Placement.service;
 
-import T_And_P.Training_and_Placement.entity.Company;
 import T_And_P.Training_and_Placement.bean.CompanyBean;
 import T_And_P.Training_and_Placement.dto.CompanyRequestDTO;
 import T_And_P.Training_and_Placement.dto.CompanyResponseDTO;
+import T_And_P.Training_and_Placement.entity.CompanyMaster;
 import T_And_P.Training_and_Placement.exception.CompanyException;
 import T_And_P.Training_and_Placement.repository.CompanyRepository;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,11 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class CompanyService {
 
-    @Autowired
-    private CompanyRepository companyRepository;
+
+    private final CompanyRepository companyRepository;
 
     private static final Logger log = LoggerFactory.getLogger(CompanyService.class);
 
@@ -35,7 +37,7 @@ public class CompanyService {
                     .orElseThrow(() -> new CompanyException("Company not found", HttpStatus.BAD_REQUEST));
         }
 
-        Company companyEntity = Company.builder()
+        CompanyMaster companyEntity = CompanyMaster.builder()
                 .id(requestDTO.getId())
                 .companyName(requestDTO.getCompanyName())
                 .address(requestDTO.getAddress())
@@ -43,7 +45,7 @@ public class CompanyService {
                 .build();
 
         log.info("Company is getting saved");
-        Company savedCompany = companyRepository.save(companyEntity);
+        CompanyMaster savedCompany = companyRepository.save(companyEntity);
 
         log.info("company saved successfully ");
 

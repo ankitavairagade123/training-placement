@@ -1,7 +1,7 @@
 package T_And_P.Training_and_Placement.repository;
 
-import T_And_P.Training_and_Placement.entity.Company;
 import T_And_P.Training_and_Placement.bean.CompanyBean;
+import T_And_P.Training_and_Placement.entity.CompanyMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface CompanyRepository extends JpaRepository<Company,Long> {
+public interface CompanyRepository extends JpaRepository<CompanyMaster,Long> {
 
     @Query(value = "select id from company_master where id=:id  ",nativeQuery = true)
     Optional<Long> getByIdCompany(@Param("id") Long id);
