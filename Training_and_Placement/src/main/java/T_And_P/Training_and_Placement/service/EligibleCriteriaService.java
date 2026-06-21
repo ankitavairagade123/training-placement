@@ -121,13 +121,13 @@ public class EligibleCriteriaService {
 
         log.info("Delete request received for id : {}", id);
 
-        EligibleCritriaMaster entity =
+        Long entity =
                 repository.getByIdEligible(id)
                         .orElseThrow(() -> new CompanyException(
                                 "Eligible Criteria not found",
                                 HttpStatus.BAD_REQUEST));
 
-        repository.delete(entity);
+        repository.deleteById(id);
 
         log.info("Eligible criteria deleted successfully");
     }

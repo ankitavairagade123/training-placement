@@ -17,7 +17,7 @@ public interface EligibleCriteriaRepository extends JpaRepository<EligibleCritri
             FROM eligible_master
             WHERE id = :id
             """, nativeQuery = true)
-    Optional<EligibleCritriaMaster> getByIdEligible(@Param("id") Long id);
+    Optional<Long> getByIdEligible(@Param("id") Long id);
 
     @Query(value = """
             SELECT id
