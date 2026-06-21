@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-public interface EligibleCriteriaRepository
-        extends JpaRepository<EligibleCritriaMaster, Long> {
+public interface EligibleCriteriaRepository extends JpaRepository<EligibleCritriaMaster, Long> {
 
     @Query(value = """
             SELECT *
@@ -21,20 +20,20 @@ public interface EligibleCriteriaRepository
     Optional<EligibleCritriaMaster> getByIdEligible(@Param("id") Long id);
 
     @Query(value = """
-            SELECT *
+            SELECT id
             FROM eligible_master
             WHERE LOWER(eligible_name)=LOWER(:eligibleName)
             """, nativeQuery = true)
-    Optional<EligibleCritriaMaster> findByEligibleName(
+    Optional<Long> findByEligibleName(
             @Param("eligibleName") String eligibleName);
 
     @Query(value = """
-            SELECT *
+            SELECT id
             FROM eligible_master
             WHERE LOWER(eligible_name)=LOWER(:eligibleName)
             AND id <> :id
             """, nativeQuery = true)
-    Optional<EligibleCritriaMaster> findDuplicateForUpdate(
+    Optional<Long> findDuplicateForUpdate(
             @Param("eligibleName") String eligibleName,
             @Param("id") Long id);
 
