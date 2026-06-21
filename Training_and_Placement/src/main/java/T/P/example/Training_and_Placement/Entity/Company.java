@@ -18,12 +18,13 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "companyName")
     private String companyName;
 
-    @Column(nullable = false)
+    @Column(name = "address")
     private String address;
 
-    private Integer pincode;
+    @Column(name = "pincode")
+    private Long pincode;
 
 }

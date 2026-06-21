@@ -1,15 +1,20 @@
 package T.P.example.Training_and_Placement.service;
 
 import T.P.example.Training_and_Placement.Entity.Company;
+import T.P.example.Training_and_Placement.bean.CompanyBean;
 import T.P.example.Training_and_Placement.dto.CompanyRequestDTO;
 import T.P.example.Training_and_Placement.dto.CompanyResponseDTO;
+import T.P.example.Training_and_Placement.exception.CompanyException;
 import T.P.example.Training_and_Placement.repository.CompanyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,25 +29,14 @@ public class CompanyService {
 
         log.info("save company request received");
 
-        if (requestDTO.getCompanyName() == null ||
-                requestDTO.getCompanyName().trim().isEmpty()) {
-            log.warn("company name is not provided for {}", requestDTO.getCompanyName());
-            throw new RuntimeException("Company Name is required");
-        }
-
-        if (requestDTO.getAddress() == null ||
-                requestDTO.getAddress().trim().isEmpty()) {
-            log.warn("company address is not provided for {}" , requestDTO.getCompanyName());
-            throw new RuntimeException("Address is required");
-        }
-
-        if (requestDTO.getPincode() == null ||
-                requestDTO.getPincode().longValue() != 6) {
-            log.warn("Invalid pincode for {}" , requestDTO.getCompanyName());
-            throw new RuntimeException("Pincode must be 6 digits");
+        validateCompanyRequest(requestDTO);
+        if (Objects.nonNull(requestDTO.getId())) {
+            companyRepository.getByIdCompany(requestDTO.getId())
+                    .orElseThrow(() -> new CompanyException("Company not found", HttpStatus.BAD_REQUEST));
         }
 
         Company companyEntity = Company.builder()
+                .id(requestDTO.getId())
                 .companyName(requestDTO.getCompanyName())
                 .address(requestDTO.getAddress())
                 .pincode(requestDTO.getPincode())
@@ -61,20 +55,63 @@ public class CompanyService {
                 .build();
     }
 
+    private void validateCompanyRequest(CompanyRequestDTO requestDTO) {
+
+        validateRequired(requestDTO.getCompanyName(), "Company name is required");
+        validateRequired(requestDTO.getAddress(), "Address is required");
+
+        Long pincode = requestDTO.getPincode();
+        if (pincode == null || String.valueOf(pincode).length() != 6) {
+            throw new CompanyException("Pincode must be 6 digits", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void validateRequired(String value, String message) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
     public List<CompanyResponseDTO> getAllCompanies() {
 
         log.info("fetching all companies");
-        return companyRepository.findAll().stream()
-                .map(company -> CompanyResponseDTO.builder()
-                        .id(company.getId())
-                        .companyName(company.getCompanyName())
-                        .address(company.getAddress())
-                        .pincode(company.getPincode())
-                        .build())
-                .collect(Collectors.toList());
+
+        List<CompanyBean> companyBeans = companyRepository.getAllCompany();
+        if (!CollectionUtils.isEmpty(companyBeans)) {
+            return companyBeans.stream()
+                    .map(company -> CompanyResponseDTO.builder()
+                            .id(company.getId())
+                            .companyName(company.getCompanyName())
+                            .address(company.getAddress())
+                            .pincode(company.getPincode())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+        return null;
     }
 
     public void deleteCompany(Long id) {
-        companyRepository.deleteById(id);
+        try {
+            companyRepository.getByIdCompany(id)
+                    .orElseThrow(() -> new CompanyException("Company not found", HttpStatus.BAD_REQUEST));
+            companyRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new CompanyException("Company can't delete ", HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+    public CompanyResponseDTO getByIdCompany(Long id) {
+
+        CompanyBean company = companyRepository.getByIdCompanyDetails(id)
+                .orElseThrow(() -> new CompanyException("Company details not found", HttpStatus.BAD_REQUEST));
+
+
+        return CompanyResponseDTO.builder()
+                .id(company.getId())
+                .companyName(company.getCompanyName())
+                .address(company.getAddress())
+                .pincode(company.getPincode())
+                .build();
     }
 }

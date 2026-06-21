@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CompanyResponseDTO {
 
-    private long id;
+    private Long id;
     private String companyName;
     private String address;
-    private Integer pincode;
+    private Long pincode;
 }

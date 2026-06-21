@@ -21,9 +21,8 @@ public class CompanyController {
 
     private static final Logger log = LoggerFactory.getLogger(CompanyController.class);
 
-    @PostMapping
-    public ResponseEntity<CompanyResponseDTO> saveCompany(
-            @Valid @RequestBody CompanyRequestDTO companyRequestDTO) {
+    @PostMapping("/save")
+    public ResponseEntity<CompanyResponseDTO> saveCompany( @RequestBody CompanyRequestDTO companyRequestDTO) {
 
             log.info("save company request received");
 
@@ -33,7 +32,7 @@ public class CompanyController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping
+    @GetMapping("/getAll")
     public ResponseEntity<List<CompanyResponseDTO>> getAllCompanies() {
 
         log.info("getting list of companies");
@@ -41,8 +40,16 @@ public class CompanyController {
         return ResponseEntity.ok(companies);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCompany(@PathVariable Long id) {
+    @GetMapping("/getAll/{id}")
+    public ResponseEntity<CompanyResponseDTO> getByIdCompany(@PathVariable("id") Long id) {
+
+        log.info("getting list of companies");
+        CompanyResponseDTO companies = companyService.getByIdCompany(id);
+        return ResponseEntity.ok(companies);
+    }
+
+    @DeleteMapping("/deleteById/{id}")
+    public ResponseEntity<String> deleteCompany(@PathVariable("id") Long id) {
 
         log.info("delete company request received");
         companyService.deleteCompany(id);

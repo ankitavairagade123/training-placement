@@ -11,9 +11,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CompanyRequestDTO {
 
+    private Long id;
+
     private String companyName;
 
     private String address;
 
-    private Integer pincode;
+    private Long pincode;
 }
