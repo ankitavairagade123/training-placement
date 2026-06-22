@@ -25,9 +25,9 @@ public class PlannerResponseDTO {
 
     private Status status;
 
-    private LocalDateTime startTime;
+    private LocalDateTime startDateTime;
 
-    private LocalDateTime endTime;
+    private LocalDateTime endDateTime;
 
     private Mode mode;
 
@@ -36,5 +36,13 @@ public class PlannerResponseDTO {
     private Long companyId;
 
     private String companyName;
+
+    private String startDate;
+
+    private String startTimeDisplay;
+
+    private String endDate;
+
+    private String endTimeDisplay;
 
 }

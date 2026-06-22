@@ -6,13 +6,14 @@ import T_And_P.Training_and_Placement.constant.PlannerScheduleType;
 import T_And_P.Training_and_Placement.constant.PlannerType;
 import T_And_P.Training_and_Placement.constant.Status;
 import T_And_P.Training_and_Placement.dto.PlannerResponseDTO;
-import T_And_P.Training_and_Placement.entity.TrainingAndPlacementPlannerHdr;
 import T_And_P.Training_and_Placement.repository.TrainingAndPlacementPlannerHdrRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,6 +51,10 @@ public class TrainingAndPlacementPlannerService {
      */
     private PlannerResponseDTO convertToResponse(PlannerHdrBean projection) {
 
+
+        LocalDateTime startTime = projection.getStartTime();
+        LocalDateTime endTime = projection.getEndTime();
+
         return PlannerResponseDTO.builder()
                 .id(projection.getId())
                 .plannerName(projection.getPlannerName())
@@ -58,9 +63,17 @@ public class TrainingAndPlacementPlannerService {
                 .mode(Mode.valueOf(projection.getMode()))
                 .plannerScheduleType(PlannerScheduleType.valueOf(projection.getPlannerScheduleType()))
                 .status(Status.valueOf(projection.getStatus()))
-                .startTime(projection.getStartTime())
-                .endTime(projection.getEndTime())
                 .maxStudents(projection.getMaxStudents())
+                .startDate(startTime != null ? startTime.format(DATE_FORMATTER) : null)
+                .startTimeDisplay(startTime != null ? startTime.format(TIME_FORMATTER) : null)
+                .endDate(endTime != null ? endTime.format(DATE_FORMATTER) : null)
+                .endTimeDisplay(endTime != null ? endTime.format(TIME_FORMATTER) : null)
                 .build();
     }
+
+    private static final DateTimeFormatter DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    private static final DateTimeFormatter TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("hh:mm a");
 }
