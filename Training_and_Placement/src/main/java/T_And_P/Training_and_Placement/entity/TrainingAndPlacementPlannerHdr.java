@@ -1,5 +1,6 @@
 package T_And_P.Training_and_Placement.entity;
 
+import T_And_P.Training_and_Placement.constant.Mode;
 import T_And_P.Training_and_Placement.constant.PlannerScheduleType;
 import T_And_P.Training_and_Placement.constant.PlannerType;
 import T_And_P.Training_and_Placement.constant.Status;
@@ -35,6 +36,10 @@ public class TrainingAndPlacementPlannerHdr {
     @Enumerated(EnumType.STRING)
     private PlannerType plannerType;
 
+    @Column(name = "mode")
+    @Enumerated(EnumType.STRING)
+    private Mode mode;
+
     @Column(name = "planner_schedule_type")
     @Enumerated(EnumType.STRING)
     private PlannerScheduleType plannerScheduleType;
@@ -49,8 +54,11 @@ public class TrainingAndPlacementPlannerHdr {
     @Column(name = "end_time")
     private LocalDateTime endTime;
 
+    @Column(name = "number_of_students")
+    private Integer maxStudents;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id", nullable = false)
+    @JoinColumn(name = "company_id", nullable = false)
     private CompanyMaster company;
 
     @OneToMany(mappedBy = "plannerHdr", cascade = CascadeType.ALL,
