@@ -4,11 +4,13 @@ import T_And_P.Training_and_Placement.constant.Mode;
 import T_And_P.Training_and_Placement.constant.PlannerScheduleType;
 import T_And_P.Training_and_Placement.constant.PlannerType;
 import T_And_P.Training_and_Placement.constant.Status;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 public class PlannerResponseDTO {
 
     private Long id;
@@ -29,9 +31,10 @@ public class PlannerResponseDTO {
 
     private Mode mode;
 
-    private Integer maxStudents;
+    private Long maxStudents;
 
     private Long companyId;
 
     private String companyName;
+
 }

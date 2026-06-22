@@ -118,14 +118,11 @@ public class EligibleCriteriaService {
 
 
     public void delete(Long id) {
-
         log.info("Delete request received for id : {}", id);
-
-        Long entity =
-                repository.getByIdEligible(id)
-                        .orElseThrow(() -> new CompanyException(
-                                "Eligible Criteria not found",
-                                HttpStatus.BAD_REQUEST));
+        repository.getByIdEligible(id)
+                .orElseThrow(() -> new CompanyException(
+                        "Eligible Criteria not found",
+                        HttpStatus.BAD_REQUEST));
 
         repository.deleteById(id);
 
@@ -138,13 +135,11 @@ public class EligibleCriteriaService {
         return EligibleCriteriaResponseDTO.builder()
                 .id(projection.getId())
                 .eligibleName(projection.getEligibleName())
-                .status(
-                        projection.getStatus())
+                .status(projection.getStatus())
                 .build();
     }
 
-    private void validateRequest(
-            EligibleCriteriaRequestDTO requestDTO) {
+    private void validateRequest(EligibleCriteriaRequestDTO requestDTO) {
 
         if (requestDTO == null) {
             throw new CompanyException(

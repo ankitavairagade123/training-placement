@@ -54,7 +54,7 @@ public class TrainingAndPlacementPlannerHdr {
     @Column(name = "end_time")
     private LocalDateTime endTime;
 
-    @Column(name = "number_of_students")
+    @Column(name = "max_student_count")
     private Integer maxStudents;
 
     @ManyToOne(fetch = FetchType.LAZY)
