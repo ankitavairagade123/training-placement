@@ -23,4 +23,8 @@ public interface PlannerHdrBean {
     LocalDateTime getEndTime();
 
     Long getMaxStudents();
+    Long getCompanyId();
+    String getCompanyName();
+
+
 }

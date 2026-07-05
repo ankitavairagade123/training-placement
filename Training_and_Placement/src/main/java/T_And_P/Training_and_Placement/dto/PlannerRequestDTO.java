@@ -5,36 +5,38 @@ import T_And_P.Training_and_Placement.constant.PlannerScheduleType;
 import T_And_P.Training_and_Placement.constant.PlannerType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
+@Builder
 public class PlannerRequestDTO {
 
-    @NotBlank(message = "Planner name is required")
+    private Long id;
+
     private String plannerName;
 
     private String plannerDesc;
 
-    @NotNull(message = "Planner type is required")
     private PlannerType plannerType;
 
-    @NotNull(message = "Planner schedule type is required")
     private PlannerScheduleType plannerScheduleType;
 
-    @NotNull(message = "Start time is required")
     private LocalDateTime startTime;
 
-    @NotNull(message = "End time is required")
     private LocalDateTime endTime;
 
-    @NotNull(message = "mode is required")
-    private Mode node;
+    private Mode mode;
 
-    @NotNull(message = "MaxStudents is required")
     private Integer maxStudents;
 
-    @NotNull(message = "Company id is required")
     private Long companyId;
+
+    private String status;
+
+    private List<PlannerDtlDTO> plannerDetails;
+
 }

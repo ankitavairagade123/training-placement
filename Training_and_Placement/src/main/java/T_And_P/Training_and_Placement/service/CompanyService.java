@@ -70,7 +70,7 @@ public class CompanyService {
 
     private void validateRequired(String value, String message) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException(message);
+            throw new CompanyException(message,HttpStatus.BAD_REQUEST);
         }
     }
 
