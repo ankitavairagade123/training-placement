@@ -1,6 +1,5 @@
 package T_And_P.Training_and_Placement.entity;
 
-import T_And_P.Training_and_Placement.constant.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,22 +7,24 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "eligible_master")
+@Table(name = "placement_application_dtl")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EligibleCritriaMaster {
+public class PlacementApplicationDtl {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "eligible_name")
-    private String eligibleName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "application_id")
+    private PlacementApplicationHdr applicationHdr;
 
-    @Column(name = "status")
-    @Enumerated(EnumType.STRING)
-    private Status status;
+    @Column(name = "field_name")
+    private String fieldName;
 
+    @Column(name = "field_value")
+    private String fieldValue;
 }

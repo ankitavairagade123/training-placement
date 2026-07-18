@@ -18,18 +18,29 @@ public class TrainingAndPlacementPlannerDtl {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "planner_dtl_id")
+    private Long plannerDtlId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "planner_hdr_id", nullable = false)
     private TrainingAndPlacementPlannerHdr plannerHdr;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="field_id", nullable = false)
+    private ApplicationFieldMaster applicationField;
+
+    @Column(name = "mandatory")
+    @Builder.Default
+    private Boolean mandatory = false;
+
     @Column(name = "criteria_rule")
     @Enumerated(EnumType.STRING)
     private CriteriaRule criteriaRule;
 
+    @Column(name = "criteria_value")
+    private String criteriaValue;
+
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
-
 }

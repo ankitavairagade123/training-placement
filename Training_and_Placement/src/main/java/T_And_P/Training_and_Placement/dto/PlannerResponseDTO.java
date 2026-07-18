@@ -46,6 +46,9 @@ public class PlannerResponseDTO {
 
     private String endTimeDisplay;
 
+    private String venue;
+
+    private String website;
 
     private List<PlannerDtlDTO> plannerDetails;
 

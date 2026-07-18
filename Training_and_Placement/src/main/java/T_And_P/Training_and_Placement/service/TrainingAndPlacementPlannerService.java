@@ -111,7 +111,7 @@ public class TrainingAndPlacementPlannerService {
             planner = new TrainingAndPlacementPlannerHdr();
         }
 
-        planner.setPlanner_name(request.getPlannerName());
+        planner.setPlannerName(request.getPlannerName());
         planner.setPlannerDesc(request.getPlannerDesc());
         planner.setPlannerType(request.getPlannerType());
         planner.setMode(request.getMode());
@@ -120,6 +120,8 @@ public class TrainingAndPlacementPlannerService {
         planner.setStartTime(request.getStartTime());
         planner.setEndTime(request.getEndTime());
         planner.setMaxStudents(request.getMaxStudents());
+        planner.setVenue(request.getVenue());
+        planner.setWebsite(request.getWebsite());
         planner.setCompany(company);
 
         if (!CollectionUtils.isEmpty(
@@ -144,7 +146,25 @@ public class TrainingAndPlacementPlannerService {
 
         return PlannerResponseDTO.builder()
                 .id(saved.getId())
-                .plannerName(saved.getPlanner_name())
+                .plannerName(saved.getPlannerName())
+                .plannerDesc(saved.getPlannerDesc())
+                .plannerType(saved.getPlannerType())
+                .plannerScheduleType(saved.getPlannerScheduleType())
+                .mode(saved.getMode())
+                .status(saved.getStatus())
+                .maxStudents(Long.valueOf(saved.getMaxStudents()))
+                .venue(saved.getVenue())
+                .website(saved.getWebsite())
+                .companyId(saved.getCompany().getId())
+                .companyName(saved.getCompany().getCompany_name())
+                .startDate(saved.getStartTime() != null ?
+                        saved.getStartTime().format(DATE_FORMATTER) : null)
+                .startTimeDisplay(saved.getStartTime() != null ?
+                        saved.getStartTime().format(TIME_FORMATTER) : null)
+                .endDate(saved.getEndTime() != null ?
+                        saved.getEndTime().format(DATE_FORMATTER) : null)
+                .endTimeDisplay(saved.getEndTime() != null ?
+                        saved.getEndTime().format(TIME_FORMATTER) : null)
                 .build();
     }
 
@@ -199,6 +219,26 @@ public class TrainingAndPlacementPlannerService {
 
             request.setEndTime(null);
         }
+
+        if (request.getMode() == Mode.ONLINE) {
+
+            if (!StringUtils.hasText(request.getWebsite())) {
+                throw new CompanyException(
+                        "Website is mandatory for ONLINE drive",
+                        HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        if (request.getMode() == Mode.OFFLINE) {
+
+            if (!StringUtils.hasText(request.getVenue())) {
+                throw new CompanyException(
+                        "Venue is mandatory for OFFLINE drive",
+                        HttpStatus.BAD_REQUEST);
+            }
+        }
+
+
     }
 
     @Transactional
@@ -284,6 +324,8 @@ public class TrainingAndPlacementPlannerService {
                 .startTimeDisplay(startTime != null ? startTime.format(TIME_FORMATTER) : "")
                 .endDate(endTime != null ? endTime.format(DATE_FORMATTER) : "")
                 .endTimeDisplay(endTime != null ? endTime.format(TIME_FORMATTER) : "")
+                .venue(planner.getVenue())
+                .website(planner.getWebsite())
                 .plannerDetails(plannerDetails)
                 .build();
     }

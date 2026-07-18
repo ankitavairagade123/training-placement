@@ -28,19 +28,21 @@ public interface TrainingAndPlacementPlannerHdrRepository extends JpaRepository<
             tph.status AS status,
             tph.start_time AS startTime,
             tph.end_time AS endTime,
-            tph.max_student_count AS maxStudents
+            tph.max_student_count AS maxStudents,
+            tph.venue AS venue,
+            tph.website AS website,
         FROM training_and_placement_planner_hdr tph
         WHERE tph.status = 'ACTIVE'
           AND (
                 (
                     tph.planner_schedule_type = 'RANGE'
-                    AND GETDATE() BETWEEN tph.start_time AND tph.end_time
+                    AND NOW() BETWEEN tph.start_time AND tph.end_time
                 )
                 OR
                 (
                     tph.planner_schedule_type <> 'RANGE'
-                    AND tph.start_time >= CAST(GETDATE() AS DATE)
-                    AND tph.start_time < DATEADD(DAY,1,CAST(GETDATE() AS DATE))
+                    AND tph.start_time >= CURDATE()
+                    AND tph.start_time < DATE_ADD(CURDATE(), INTERVAL 1 DAY)
                 )
               )
         ORDER BY tph.start_time ASC
@@ -61,7 +63,9 @@ public interface TrainingAndPlacementPlannerHdrRepository extends JpaRepository<
             ph.max_student_count maxStudents,
             ph.start_time startTime,
             ph.end_time endTime,
-            cm.id companyId,
+            ph.venue AS venue,
+            ph.website AS website,
+            cm.id AS companyId,
             cm.companyName companyName
         FROM training_and_placement_planner_hdr ph
         INNER JOIN company_master cm
@@ -100,6 +104,8 @@ public interface TrainingAndPlacementPlannerHdrRepository extends JpaRepository<
                 tph.max_student_count AS maxStudents,
                 tph.start_time AS startTime,
                 tph.end_time AS endTime,
+                tph.venue AS venue,
+                tph.website AS website,
                 cm.id AS companyId,
                 cm.companyName AS companyName
             FROM training_and_placement_planner_hdr tph

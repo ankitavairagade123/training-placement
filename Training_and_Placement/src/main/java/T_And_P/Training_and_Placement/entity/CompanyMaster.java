@@ -18,8 +18,8 @@ public class CompanyMaster {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "companyName")
-    private String companyName;
+    @Column(name = "company_name")
+    private String company_name;
 
     @Column(name = "address")
     private String address;

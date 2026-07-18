@@ -39,7 +39,7 @@ public class CompanyService {
 
         CompanyMaster companyEntity = CompanyMaster.builder()
                 .id(requestDTO.getId())
-                .companyName(requestDTO.getCompanyName())
+                .company_name(requestDTO.getCompanyName())
                 .address(requestDTO.getAddress())
                 .pincode(requestDTO.getPincode())
                 .build();
@@ -51,7 +51,7 @@ public class CompanyService {
 
         return CompanyResponseDTO.builder()
                 .id(savedCompany.getId())
-                .companyName(savedCompany.getCompanyName())
+                .companyName(savedCompany.getCompany_name())
                 .address(savedCompany.getAddress())
                 .pincode(savedCompany.getPincode())
                 .build();

@@ -27,7 +27,7 @@ public class TrainingAndPlacementPlannerHdr {
     private Long id;
 
     @Column(name = "planner_name")
-    private String planner_name;
+    private String plannerName;
 
     @Column(name = "planner_description")
     private String plannerDesc;
@@ -64,6 +64,16 @@ public class TrainingAndPlacementPlannerHdr {
     @OneToMany(mappedBy = "plannerHdr", cascade = CascadeType.ALL,
             orphanRemoval = true, fetch = FetchType.LAZY)
     private List<TrainingAndPlacementPlannerDtl> trainingAndPlacementPlannerDtls;
+
+    @OneToMany(mappedBy = "plannerHdr", cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY)
+    private List<PlacementApplicationHdr> placementApplications;
+
+    @Column(name = "venue")
+    private String venue;
+
+    @Column(name = "website")
+    private String website;
 
 
 }

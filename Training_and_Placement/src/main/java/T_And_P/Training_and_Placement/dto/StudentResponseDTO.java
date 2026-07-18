@@ -6,15 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class EligibleCriteriaRequestDTO {
+@NoArgsConstructor
+@Builder
+public class StudentResponseDTO {
 
-    private Long id;
+    private Long studentId;
 
-    private String eligibleName;
-
-    private String status;
-
+    private String studentName;
 }
