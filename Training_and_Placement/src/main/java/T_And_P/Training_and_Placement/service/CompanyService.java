@@ -9,21 +9,29 @@ import T_And_P.Training_and_Placement.repository.CompanyRepository;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
+import org.springframework.context.MessageSource;
 @Service
 @AllArgsConstructor
 public class CompanyService {
 
 
     private final CompanyRepository companyRepository;
+
+    private final MessageSource messageSource;
+    private static final Pattern EMAIL_PATTERN =
+            Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+
+    private static final Pattern PINCODE_PATTERN =
+            Pattern.compile("^[1-9][0-9]{5}$");
 
     private static final Logger log = LoggerFactory.getLogger(CompanyService.class);
 
@@ -42,6 +50,9 @@ public class CompanyService {
                 .company_name(requestDTO.getCompanyName())
                 .address(requestDTO.getAddress())
                 .pincode(requestDTO.getPincode())
+                .contactNumber(requestDTO.getContactNumber())
+                .website(requestDTO.getWebsite())
+                .email(requestDTO.getEmail())
                 .build();
 
         log.info("Company is getting saved");
@@ -54,17 +65,34 @@ public class CompanyService {
                 .companyName(savedCompany.getCompany_name())
                 .address(savedCompany.getAddress())
                 .pincode(savedCompany.getPincode())
+                .website(savedCompany.getWebsite())
+                .contactNumber(savedCompany.getContactNumber())
+                .email(savedCompany.getEmail())
                 .build();
     }
 
-    private void validateCompanyRequest(CompanyRequestDTO requestDTO) {
+    public String getMessage(String key) {
+        return messageSource.getMessage(key, null, Locale.getDefault());
+    }
+    private void validateCompanyRequest(CompanyRequestDTO request) {
 
-        validateRequired(requestDTO.getCompanyName(), "Company name is required");
-        validateRequired(requestDTO.getAddress(), "Address is required");
+        validateRequired(request.getCompanyName(), "Company name is required");
+        validateRequired(request.getAddress(), "Address is required");
 
-        Long pincode = requestDTO.getPincode();
-        if (pincode == null || String.valueOf(pincode).length() != 6) {
-            throw new CompanyException("Pincode must be 6 digits", HttpStatus.BAD_REQUEST);
+        if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
+            throw new CompanyException(getMessage("validation.email.required"),HttpStatus.BAD_REQUEST);
+        }
+
+        if (!EMAIL_PATTERN.matcher(request.getEmail()).matches()) {
+            throw new CompanyException("Invalid email format.",HttpStatus.BAD_REQUEST);
+        }
+
+        if (request.getPincode() == null || request.getPincode().toString().trim().isEmpty()) {
+            throw new CompanyException("Pincode is required.",HttpStatus.BAD_REQUEST);
+        }
+
+        if (!PINCODE_PATTERN.matcher(request.getPincode().toString()).matches()) {
+            throw new CompanyException("Invalid Indian pincode.",HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -86,6 +114,9 @@ public class CompanyService {
                             .companyName(company.getCompanyName())
                             .address(company.getAddress())
                             .pincode(company.getPincode())
+                            .website(company.getWebsite())
+                            .contactNumber(company.getContactNumber())
+                            .email(company.getEmail())
                             .build())
                     .collect(Collectors.toList());
         }
@@ -114,6 +145,9 @@ public class CompanyService {
                 .companyName(company.getCompanyName())
                 .address(company.getAddress())
                 .pincode(company.getPincode())
+                .contactNumber(company.getContactNumber())
+                .website(company.getWebsite())
+                .email(company.getEmail())
                 .build();
     }
 }

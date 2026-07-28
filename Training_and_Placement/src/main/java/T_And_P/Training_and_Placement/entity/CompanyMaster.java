@@ -25,6 +25,15 @@ public class CompanyMaster extends AuditEntity {
     @Column(name = "address")
     private String address;
 
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "website")
+    private String website;
+
+    @Column(name = "contact_number")
+    private String contactNumber;
+
     @Column(name = "pincode")
     private Long pincode;
 

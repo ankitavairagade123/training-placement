@@ -15,4 +15,7 @@ public class CompanyResponseDTO {
     private String companyName;
     private String address;
     private Long pincode;
+    private String website;
+    private String contactNumber;
+    private String email;
 }

@@ -18,4 +18,10 @@ public class CompanyRequestDTO {
     private String address;
 
     private Long pincode;
+
+    private String website;
+
+    private String email;
+
+    private String contactNumber;
 }

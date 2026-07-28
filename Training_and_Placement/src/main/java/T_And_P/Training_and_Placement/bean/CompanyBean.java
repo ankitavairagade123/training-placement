@@ -6,4 +6,8 @@ public interface CompanyBean {
     String getCompanyName();
     Long getPincode();
     String getAddress();
+    String getWebsite();
+    String getContactNumber();
+
+    String getEmail();
 }
