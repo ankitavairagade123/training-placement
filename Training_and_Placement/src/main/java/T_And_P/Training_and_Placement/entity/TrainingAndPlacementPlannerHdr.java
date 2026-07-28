@@ -1,5 +1,6 @@
 package T_And_P.Training_and_Placement.entity;
 
+import T_And_P.Training_and_Placement.audit.AuditEntity;
 import T_And_P.Training_and_Placement.constant.Mode;
 import T_And_P.Training_and_Placement.constant.PlannerScheduleType;
 import T_And_P.Training_and_Placement.constant.PlannerType;
@@ -19,7 +20,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TrainingAndPlacementPlannerHdr {
+public class TrainingAndPlacementPlannerHdr extends AuditEntity {
 
 
     @Id

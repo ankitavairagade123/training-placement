@@ -1,5 +1,6 @@
 package T_And_P.Training_and_Placement.entity;
 
+import T_And_P.Training_and_Placement.audit.AuditEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,11 +13,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Student {
+public class Student extends AuditEntity  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long studentId;
+    @Column(name = "id")
+    private Long id;
 
     @Column(name = "student_name")
     private String studentName;

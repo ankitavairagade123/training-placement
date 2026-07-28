@@ -1,5 +1,6 @@
 package T_And_P.Training_and_Placement.entity;
 
+import T_And_P.Training_and_Placement.audit.AuditEntity;
 import T_And_P.Training_and_Placement.constant.CriteriaRule;
 import T_And_P.Training_and_Placement.constant.Status;
 import jakarta.persistence.*;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TrainingAndPlacementPlannerDtl {
+public class TrainingAndPlacementPlannerDtl extends AuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

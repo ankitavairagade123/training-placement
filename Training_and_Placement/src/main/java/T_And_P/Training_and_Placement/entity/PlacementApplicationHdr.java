@@ -1,5 +1,6 @@
 package T_And_P.Training_and_Placement.entity;
 
+import T_And_P.Training_and_Placement.audit.AuditEntity;
 import T_And_P.Training_and_Placement.constant.ApplicationStatus;
 import T_And_P.Training_and_Placement.entity.PlacementApplicationDtl;
 import T_And_P.Training_and_Placement.entity.TrainingAndPlacementPlannerHdr;
@@ -23,7 +24,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlacementApplicationHdr {
+public class PlacementApplicationHdr extends AuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
