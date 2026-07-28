@@ -6,6 +6,7 @@ import T_And_P.Training_and_Placement.dto.CompanyResponseDTO;
 import T_And_P.Training_and_Placement.entity.CompanyMaster;
 import T_And_P.Training_and_Placement.exception.CompanyException;
 import T_And_P.Training_and_Placement.repository.CompanyRepository;
+import io.swagger.v3.oas.models.info.Contact;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,9 @@ public class CompanyService {
 
     private static final Pattern PINCODE_PATTERN =
             Pattern.compile("^[1-9][0-9]{5}$");
+
+    private static final Pattern CONTACT_NUMBER_PATTERN =
+            Pattern.compile("^[6-9]\\d{9}$");
 
     private static final Logger log = LoggerFactory.getLogger(CompanyService.class);
 
@@ -93,6 +97,17 @@ public class CompanyService {
 
         if (!PINCODE_PATTERN.matcher(request.getPincode().toString()).matches()) {
             throw new CompanyException("Invalid Indian pincode.",HttpStatus.BAD_REQUEST);
+        }
+
+        if(request.getContactNumber() == null || request.getContactNumber().isEmpty()){
+            throw new CompanyException(getMessage("validation.contactNumber.required"),HttpStatus.BAD_REQUEST);
+        }
+
+        if (!CONTACT_NUMBER_PATTERN.matcher(request.getContactNumber()).matches()) {
+            throw new CompanyException(
+                    "Invalid Indian contact number.",
+                    HttpStatus.BAD_REQUEST
+            );
         }
     }
 

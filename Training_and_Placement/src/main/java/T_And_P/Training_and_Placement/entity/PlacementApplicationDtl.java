@@ -1,6 +1,5 @@
 package T_And_P.Training_and_Placement.entity;
 
-import T_And_P.Training_and_Placement.audit.AuditEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlacementApplicationDtl extends AuditEntity {
+public class PlacementApplicationDtl {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

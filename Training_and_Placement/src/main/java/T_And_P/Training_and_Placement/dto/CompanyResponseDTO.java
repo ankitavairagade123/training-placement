@@ -12,8 +12,11 @@ import lombok.NoArgsConstructor;
 public class CompanyResponseDTO {
 
     private Long id;
+
     private String companyName;
+
     private String address;
+
     private Long pincode;
     private String website;
     private String contactNumber;

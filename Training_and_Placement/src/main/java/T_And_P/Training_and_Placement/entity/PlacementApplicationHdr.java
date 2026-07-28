@@ -1,6 +1,5 @@
 package T_And_P.Training_and_Placement.entity;
 
-import T_And_P.Training_and_Placement.audit.AuditEntity;
 import T_And_P.Training_and_Placement.constant.ApplicationStatus;
 import T_And_P.Training_and_Placement.entity.PlacementApplicationDtl;
 import T_And_P.Training_and_Placement.entity.TrainingAndPlacementPlannerHdr;
@@ -24,7 +23,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlacementApplicationHdr extends AuditEntity {
+public class PlacementApplicationHdr {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,12 +33,16 @@ public class PlacementApplicationHdr extends AuditEntity {
     @JoinColumn(name = "planner_id", nullable = false)
     private TrainingAndPlacementPlannerHdr plannerHdr;
 
-    @Column(name = "student_id", nullable = false)
-    private Long studentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id", nullable = false)
+    private Student student;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "application_status", nullable = false)
     private ApplicationStatus applicationStatus;
+
+    @Column(name = "resume_path", nullable = false)
+    private String resumePath;
 
     @Column(name = "applied_date", nullable = false)
     private LocalDateTime appliedDate;
