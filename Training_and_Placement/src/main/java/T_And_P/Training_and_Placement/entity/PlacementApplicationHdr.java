@@ -1,16 +1,31 @@
 package T_And_P.Training_and_Placement.entity;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import T_And_P.Training_and_Placement.constant.ApplicationStatus;
-import T_And_P.Training_and_Placement.entity.PlacementApplicationDtl;
-import T_And_P.Training_and_Placement.entity.TrainingAndPlacementPlannerHdr;
-import jakarta.persistence.*;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.util.List;
+import lombok.ToString;
 
 @Entity
 @Table(
@@ -41,8 +56,17 @@ public class PlacementApplicationHdr {
     @Column(name = "application_status", nullable = false)
     private ApplicationStatus applicationStatus;
 
-    @Column(name = "resume_path", nullable = false)
+    @Column(name = "resume_path")
     private String resumePath;
+
+    @Column(name = "terms_accepted")
+    private Boolean termsAccepted;
+
+    @Column(name = "offer_letter_path")
+    private String offerLetterPath;
+
+    @Column(name = "joining_letter_path")
+    private String joiningLetterPath;
 
     @Column(name = "applied_date", nullable = false)
     private LocalDateTime appliedDate;
@@ -52,7 +76,7 @@ public class PlacementApplicationHdr {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<PlacementApplicationDtl> applicationDetails;
-
-
+    @Builder.Default
+    @ToString.Exclude
+    private List<PlacementApplicationDtl> applicationDetails = new ArrayList<>();
 }

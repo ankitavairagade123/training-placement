@@ -1,19 +1,16 @@
 package T_And_P.Training_and_Placement.dto;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import T_And_P.Training_and_Placement.constant.Mode;
 import T_And_P.Training_and_Placement.constant.PlannerScheduleType;
 import T_And_P.Training_and_Placement.constant.PlannerType;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
-import lombok.Data;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Builder
@@ -35,6 +32,10 @@ public class PlannerRequestDTO {
 
     private LocalDateTime endTime;
 
+    private LocalDateTime registrationStartDate;
+
+    private LocalDateTime registrationEndDate;
+
     private Mode mode;
 
     private Integer maxStudents;
@@ -47,8 +48,13 @@ public class PlannerRequestDTO {
 
     private String website;
 
+    private String meetingLink;
+
+    private String remarks;
+
+    private String attachmentPath;
+
     private List<PlannerDtlDTO> plannerDetails;
 
-
-
+    private List<PlannerQuestionDTO> questions;
 }

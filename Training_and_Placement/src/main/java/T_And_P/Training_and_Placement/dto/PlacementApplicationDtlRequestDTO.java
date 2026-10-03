@@ -1,6 +1,8 @@
 package T_And_P.Training_and_Placement.dto;
 
-import jakarta.validation.constraints.NotBlank;
+
+import javax.validation.constraints.NotBlank;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,9 +16,9 @@ public class PlacementApplicationDtlRequestDTO {
 
     private Long applicationDetailId;
 
-    @NotBlank(message = "field name is required")
+    @NotBlank(message = "{application.field.name.required}")
     private String fieldName;
 
-    @NotBlank(message = "field value is required")
+    @NotBlank(message = "{application.field.value.required}")
     private String fieldValue;
 }

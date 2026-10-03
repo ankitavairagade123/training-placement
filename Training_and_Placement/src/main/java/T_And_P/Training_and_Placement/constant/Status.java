@@ -2,5 +2,11 @@ package T_And_P.Training_and_Placement.constant;
 
 public enum Status {
 
-    ACTIVE,INACTIVE
+    DRAFT,
+
+    ACTIVE,
+
+    INACTIVE,
+
+    REJECTED
 }

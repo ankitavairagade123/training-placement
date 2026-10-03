@@ -1,4 +1,0 @@
-//package T_And_P.Training_and_Placement.exception;
-//
-//public class CertificationException {
-//}

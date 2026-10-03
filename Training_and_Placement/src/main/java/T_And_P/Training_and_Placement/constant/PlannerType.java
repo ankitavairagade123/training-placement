@@ -2,5 +2,20 @@ package T_And_P.Training_and_Placement.constant;
 
 public enum PlannerType {
 
-    TRAINING,INTERVIEW,WORKSHOP
+    CAMPUS_PLACEMENT,
+
+    INTERNSHIP,
+
+    WORKSHOP,
+
+    INDUSTRIAL_VISIT,
+
+    SEMINAR,
+
+    HACKATHON,
+
+    TRAINING,
+
+    INTERVIEW
 }
+

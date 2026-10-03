@@ -1,57 +1,185 @@
 package T_And_P.Training_and_Placement.controller;
 
-import T_And_P.Training_and_Placement.dto.CompanyRequestDTO;
-import T_And_P.Training_and_Placement.dto.CompanyResponseDTO;
-import T_And_P.Training_and_Placement.service.CompanyService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import T_And_P.Training_and_Placement.dto.CompanyRequestDTO;
+import T_And_P.Training_and_Placement.dto.CompanyResponseDTO;
+import T_And_P.Training_and_Placement.exception.PlacementApplicationException;
+import T_And_P.Training_and_Placement.service.CompanyService;
+import T_And_P.Training_and_Placement.util.MessageUtil;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * REST APIs for Company Master.
+ */
+@Slf4j
 @RestController
 @RequestMapping("/api/company")
+@RequiredArgsConstructor
 public class CompanyController {
 
-    @Autowired
-    private CompanyService companyService;
+    private final CompanyService companyService;
+    private final MessageUtil messageUtil;
 
-    private static final Logger log = LoggerFactory.getLogger(CompanyController.class);
+    /**
+     * Creates or updates a company.
+     */
+    @PostMapping
+    public ResponseEntity<CompanyResponseDTO> saveCompany(
+            @RequestBody CompanyRequestDTO companyRequestDTO) {
 
-    @PostMapping("/save")
-    public ResponseEntity<CompanyResponseDTO> saveCompany( @RequestBody CompanyRequestDTO companyRequestDTO) {
+        log.info(
+                "saveCompany() started for id={}, companyName={}",
+                companyRequestDTO == null
+                        ? null
+                        : companyRequestDTO.getId(),
+                companyRequestDTO == null
+                        ? null
+                        : companyRequestDTO.getCompanyName()
+        );
 
-            log.info("save company request received");
+        try {
+            CompanyResponseDTO response =
+                    companyService.saveCompany(companyRequestDTO);
 
-        CompanyResponseDTO response = companyService.saveCompany(companyRequestDTO);
+            log.info(
+                    "saveCompany() completed for companyId={}",
+                    response.getId()
+            );
 
-        log.info("company saved successfully");
-        return ResponseEntity.ok(response);
+            return ResponseEntity.ok(response);
+
+        } catch (PlacementApplicationException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("saveCompany() failed", e);
+
+            throw new PlacementApplicationException(
+                    messageUtil.badRequest("error.unexpected"),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
-    @GetMapping("/getAll")
+    /**
+     * Returns all companies.
+     */
+    @GetMapping
     public ResponseEntity<List<CompanyResponseDTO>> getAllCompanies() {
 
-        log.info("getting list of companies");
-        List<CompanyResponseDTO> companies = companyService.getAllCompanies();
-        return ResponseEntity.ok(companies);
+        log.info("getAllCompanies() started");
+
+        try {
+            List<CompanyResponseDTO> companies =
+                    companyService.getAllCompanies();
+
+            log.info(
+                    "getAllCompanies() completed, count={}",
+                    companies == null ? 0 : companies.size()
+            );
+
+            return ResponseEntity.ok(companies);
+
+        } catch (PlacementApplicationException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("getAllCompanies() failed", e);
+
+            throw new PlacementApplicationException(
+                    messageUtil.badRequest("error.unexpected"),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
-    @GetMapping("/getAll/{id}")
-    public ResponseEntity<CompanyResponseDTO> getByIdCompany(@PathVariable("id") Long id) {
+    /**
+     * Loads one company by id.
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<CompanyResponseDTO> getByIdCompany(
+            @PathVariable("id") Long id) {
 
-        log.info("getting list of companies");
-        CompanyResponseDTO companies = companyService.getByIdCompany(id);
-        return ResponseEntity.ok(companies);
+        log.info(
+                "getByIdCompany() started for id={}",
+                id
+        );
+
+        try {
+            CompanyResponseDTO company =
+                    companyService.getByIdCompany(id);
+
+            log.info(
+                    "getByIdCompany() completed for id={}",
+                    id
+            );
+
+            return ResponseEntity.ok(company);
+
+        } catch (PlacementApplicationException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error(
+                    "getByIdCompany() failed for id={}",
+                    id,
+                    e
+            );
+
+            throw new PlacementApplicationException(
+                    messageUtil.badRequest("error.unexpected"),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
-    @DeleteMapping("/deleteById/{id}")
-    public ResponseEntity<String> deleteCompany(@PathVariable("id") Long id) {
+    /**
+     * Deletes a company.
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteCompany(
+            @PathVariable("id") Long id) {
 
-        log.info("delete company request received");
-        companyService.deleteCompany(id);
-        return ResponseEntity.ok("Company deleted successfully");
+        log.info(
+                "deleteCompany() started for id={}",
+                id
+        );
+
+        try {
+            companyService.deleteCompany(id);
+
+            log.info(
+                    "deleteCompany() completed for id={}",
+                    id
+            );
+
+            return ResponseEntity.ok(
+                    "Company deleted successfully"
+            );
+
+        } catch (PlacementApplicationException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error(
+                    "deleteCompany() failed for id={}",
+                    id,
+                    e
+            );
+
+            throw new PlacementApplicationException(
+                    messageUtil.badRequest("error.unexpected"),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
 }

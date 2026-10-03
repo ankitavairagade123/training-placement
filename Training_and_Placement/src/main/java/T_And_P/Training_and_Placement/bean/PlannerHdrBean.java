@@ -22,15 +22,29 @@ public interface PlannerHdrBean {
 
     LocalDateTime getEndTime();
 
+    LocalDateTime getRegistrationStartDate();
+
+    LocalDateTime getRegistrationEndDate();
+
     Long getMaxStudents();
 
     String getVenue();
 
     String getWebsite();
 
+    String getMeetingLink();
+
+    String getRemarks();
+
+    String getAttachmentPath();
+
+    String getPublishedBy();
+
+    LocalDateTime getPublishedAt();
+
     Long getCompanyId();
 
     String getCompanyName();
 
-
+    String getCompanyCode();
 }

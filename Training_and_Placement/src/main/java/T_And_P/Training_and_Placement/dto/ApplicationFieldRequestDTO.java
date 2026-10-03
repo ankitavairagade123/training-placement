@@ -1,9 +1,10 @@
 package T_And_P.Training_and_Placement.dto;
 
 import T_And_P.Training_and_Placement.constant.FieldType;
-import T_And_P.Training_and_Placement.constant.Status;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,12 +18,12 @@ public class ApplicationFieldRequestDTO {
 
     private Long fieldId;
 
-    @NotBlank
+    @NotBlank(message = "{field.name.required}")
     private String fieldName;
 
-    @NotNull
+    @NotNull(message = "{field.type.required}")
     private FieldType fieldType;
 
-    @NotNull
+    @NotNull(message = "{field.status.required}")
     private String status;
 }

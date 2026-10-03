@@ -1,5 +1,6 @@
 package T_And_P.Training_and_Placement.dto;
 
+import T_And_P.Training_and_Placement.constant.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,14 @@ public class CompanyRequestDTO {
 
     private String companyName;
 
+    private String companyCode;
+
+    private String companyType;
+
+    private String industryType;
+
+    private String hrName;
+
     private String address;
 
     private Long pincode;
@@ -24,4 +33,6 @@ public class CompanyRequestDTO {
     private String email;
 
     private String contactNumber;
+
+    private Status status;
 }

@@ -2,6 +2,10 @@ package T_And_P.Training_and_Placement.exception;
 
 import org.springframework.http.HttpStatus;
 
+/**
+ * Single business exception used across the application.
+ * GlobalExceptionHandler converts it into the API error response.
+ */
 public class PlacementApplicationException extends RuntimeException {
 
     private final HttpStatus status;

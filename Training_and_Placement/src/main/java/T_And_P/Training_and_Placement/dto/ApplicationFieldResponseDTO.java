@@ -1,7 +1,6 @@
 package T_And_P.Training_and_Placement.dto;
 
 import T_And_P.Training_and_Placement.constant.FieldType;
-import T_And_P.Training_and_Placement.constant.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,10 +8,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class ApplicationFieldResponseDTO {
-
     private Long fieldId;
 
     private String fieldName;
@@ -20,4 +18,5 @@ public class ApplicationFieldResponseDTO {
     private FieldType fieldType;
 
     private String status;
+
 }
