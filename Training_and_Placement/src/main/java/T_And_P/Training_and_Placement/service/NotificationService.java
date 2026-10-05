@@ -22,6 +22,7 @@ public class NotificationService {
 
     private final JavaMailSender mailSender;
 
+
     private final String mailFrom;
 
     public NotificationService(ObjectProvider<JavaMailSender> mailSenderProvider,
