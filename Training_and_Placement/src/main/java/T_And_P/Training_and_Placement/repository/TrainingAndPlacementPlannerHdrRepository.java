@@ -1,18 +1,16 @@
 package T_And_P.Training_and_Placement.repository;
 
-
-import java.util.List;
-import java.util.Optional;
-
+import T_And_P.Training_and_Placement.bean.PlannerHdrBean;
+import T_And_P.Training_and_Placement.bean.StatusCountBean;
+import T_And_P.Training_and_Placement.entity.TrainingAndPlacementPlannerHdr;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import T_And_P.Training_and_Placement.bean.PlannerHdrBean;
-import T_And_P.Training_and_Placement.entity.TrainingAndPlacementPlannerHdr;
+import java.util.List;
+import java.util.Optional;
 
-public interface TrainingAndPlacementPlannerHdrRepository
-        extends JpaRepository<TrainingAndPlacementPlannerHdr, Long> {
+public interface TrainingAndPlacementPlannerHdrRepository extends JpaRepository<TrainingAndPlacementPlannerHdr, Long> {
 
     @Query(value = "SELECT "
             + "tph.id AS id, "
@@ -38,15 +36,11 @@ public interface TrainingAndPlacementPlannerHdrRepository
             + "cm.company_name AS companyName, "
             + "cm.company_code AS companyCode "
             + "FROM training_and_placement_planner_hdr tph "
-            + "INNER JOIN company_master cm "
-            + "ON cm.id = tph.company_id "
+            + "INNER JOIN company_master cm ON cm.id = tph.company_id "
             + "WHERE tph.status = 'ACTIVE' "
-            + "AND (tph.registration_start_date IS NULL "
-            + "OR NOW() >= tph.registration_start_date) "
-            + "AND (tph.registration_end_date IS NULL "
-            + "OR NOW() <= tph.registration_end_date) "
-            + "ORDER BY tph.start_time ASC",
-            nativeQuery = true)
+            + "AND (tph.registration_start_date IS NULL OR NOW() >= tph.registration_start_date) "
+            + "AND (tph.registration_end_date IS NULL OR NOW() <= tph.registration_end_date) "
+            + "ORDER BY tph.start_time ASC", nativeQuery = true)
     List<PlannerHdrBean> getActivePlanners();
 
     @Query(value = "SELECT "
@@ -73,12 +67,9 @@ public interface TrainingAndPlacementPlannerHdrRepository
             + "cm.company_name AS companyName, "
             + "cm.company_code AS companyCode "
             + "FROM training_and_placement_planner_hdr ph "
-            + "INNER JOIN company_master cm "
-            + "ON cm.id = ph.company_id "
-            + "WHERE ph.id = :id",
-            nativeQuery = true)
-    Optional<PlannerHdrBean> getPlannerById(
-            @Param("id") Long id);
+            + "INNER JOIN company_master cm ON cm.id = ph.company_id "
+            + "WHERE ph.id = :id", nativeQuery = true)
+    Optional<PlannerHdrBean> getPlannerById(@Param("id") Long id);
 
     @Query(value = "SELECT "
             + "tph.id AS id, "
@@ -104,9 +95,15 @@ public interface TrainingAndPlacementPlannerHdrRepository
             + "cm.company_name AS companyName, "
             + "cm.company_code AS companyCode "
             + "FROM training_and_placement_planner_hdr tph "
-            + "INNER JOIN company_master cm "
-            + "ON cm.id = tph.company_id "
-            + "ORDER BY tph.id DESC",
-            nativeQuery = true)
+            + "INNER JOIN company_master cm ON cm.id = tph.company_id "
+            + "ORDER BY tph.id DESC", nativeQuery = true)
     List<PlannerHdrBean> getAllPlanners();
+
+    @Query(value = "select count(*) from training_and_placement_planner_hdr", nativeQuery = true)
+    Long countAllPlanners();
+
+    @Query(value = "select status as status, count(*) as totalCount "
+            + "from training_and_placement_planner_hdr "
+            + "group by status", nativeQuery = true)
+    List<StatusCountBean> countPlannersByStatus();
 }

@@ -21,6 +21,8 @@ public class PlacementApplicationHdrResponseDTO {
 
     private String studentName;
 
+    private String email;
+
     private Long plannerId;
 
     private String plannerName;

@@ -1,13 +1,10 @@
 package T_And_P.Training_and_Placement.event;
 
-
 import T_And_P.Training_and_Placement.service.NotificationService;
-
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Component;
 
 /**
  * Kafka listener for application-submitted mail.
@@ -34,20 +31,22 @@ public class ApplicationSubmittedEventListener {
         );
 
         try {
-            if (event == null) {
-                return;
+            if (event != null) {
+
+                notificationService.sendApplicationSubmittedEmail(
+                        event.getEmail(),
+                        event.getStudentName(),
+                        event.getPlannerName()
+                );
+
+                log.info(
+                        "onApplicationSubmitted() completed for email={}",
+                        event.getEmail()
+                );
+
+            } else {
+                log.warn("onApplicationSubmitted() skipped because event is null");
             }
-
-            notificationService.sendApplicationSubmittedEmail(
-                    event.getEmail(),
-                    event.getStudentName(),
-                    event.getPlannerName()
-            );
-
-            log.info(
-                    "onApplicationSubmitted() completed for email={}",
-                    event.getEmail()
-            );
 
         } catch (Exception e) {
             log.error(

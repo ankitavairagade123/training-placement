@@ -282,7 +282,9 @@ Deletes a planner that is not published.
 
 Student apply flow, faculty status update, and offer-letter path save.
 
-Application status values: `APPLIED`, `SHORTLISTED`, `INTERVIEW_SCHEDULED`, `SELECTED`, `REJECTED`, `OFFER_ACCEPTED`
+Application status values: `APPLIED`, `SHORTLISTED`, `INTERVIEW_SCHEDULED`, `SELECTED`, `REJECTED`, `CANCELLED`, `OFFER_ACCEPTED`
+
+Every status change emails the student through Kafka topic `application-activity`.
 
 ### Check eligibility
 
@@ -292,7 +294,7 @@ Checks a student against planner rules without creating an application.
 
 ### Apply for a drive
 
-Student applies to a published planner. Eligibility, registration window, resume, terms, and mandatory questions are validated. Confirmation mail is published to Kafka topic `application-submitted` and sent by the listener.
+Student applies to a published planner. Eligibility, registration window, resume, terms, and mandatory questions are validated. Confirmation mail is published to Kafka topic `application-activity`.
 
 - **URL:** `POST /api/placement-application/apply`
 - **Sample request:**
@@ -324,7 +326,7 @@ Faculty list for one drive.
 
 ### Update application status
 
-Faculty moves the application through interview and result stages.
+Faculty moves the application through interview and result stages. The student receives mail for `SHORTLISTED`, `INTERVIEW_SCHEDULED`, `SELECTED`, `REJECTED`, or `CANCELLED`.
 
 - **URL:** `PUT /api/placement-application/status`
 - **Sample request:**
@@ -333,6 +335,15 @@ Faculty moves the application through interview and result stages.
 {
   "applicationId": 1,
   "applicationStatus": "SELECTED"
+}
+```
+
+Cancel sample:
+
+```json
+{
+  "applicationId": 1,
+  "applicationStatus": "CANCELLED"
 }
 ```
 
@@ -352,17 +363,46 @@ Allowed only when status is `SELECTED` or `OFFER_ACCEPTED`. Status becomes `OFFE
 
 ### Delete application
 
+Deletes the application and emails the student that it was cancelled.
+
 - **URL:** `DELETE /api/placement-application/1`
 
 ---
 
-## 7. Background mail (Kafka)
+## 7. Dashboard
+
+TPO home, planner-wise faculty cards, and student portal cards.
+
+### TPO dashboard
+
+KPI cards, application funnel, company-wise counts, last 10 applications, and upcoming published planners.
+
+- **URL:** `GET /api/dashboard`
+
+Sample response fields: `totalCompanies`, `totalStudents`, `totalPlanners`, `activePlanners`, `totalApplications`, `appliedCount`, `shortlistedCount`, `interviewScheduledCount`, `selectedCount`, `rejectedCount`, `cancelledCount`, `offerAcceptedCount`, `companyWise`, `recentApplications`, `upcomingPlanners`.
+
+### Planner dashboard
+
+Application funnel for one drive.
+
+- **URL:** `GET /api/dashboard/planner/1`
+
+### Student dashboard
+
+Student application funnel, my applications, and upcoming planners.
+
+- **URL:** `GET /api/dashboard/student/1`
+
+---
+
+## 8. Background mail (Kafka)
 
 Kafka broker: `localhost:9092`
 
 | Event | Topic | Listener | Mail |
 | --- | --- | --- | --- |
 | Planner published | `planner-published` | `PlannerPublishedEventListener` | Eligible students |
-| Application submitted | `application-submitted` | `ApplicationSubmittedEventListener` | Applicant |
+| Application submitted (legacy) | `application-submitted` | `ApplicationSubmittedEventListener` | Applicant |
+| Application activity | `application-activity` | `ApplicationActivityEventListener` | Applicant for applied, shortlisted, interview, selected, rejected, cancelled, offer accepted |
 
-Publish and apply APIs still succeed if Kafka or mail fails.
+Publish, apply, and status-update APIs still succeed if Kafka or mail fails.

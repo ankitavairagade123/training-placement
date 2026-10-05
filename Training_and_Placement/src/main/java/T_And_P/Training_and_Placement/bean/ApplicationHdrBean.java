@@ -10,6 +10,8 @@ public interface ApplicationHdrBean {
 
     String getStudentName();
 
+    String getEmail();
+
     Long getPlannerId();
 
     String getPlannerName();

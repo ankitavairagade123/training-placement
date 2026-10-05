@@ -10,7 +10,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
 /**
- * Kafka topics used for background mail processing.
+ * Kafka configuration for background mail processing.
  */
 @Configuration
 @EnableKafka
@@ -22,8 +22,11 @@ public class KafkaConfig {
     @Value("${tpms.kafka.application-submitted-topic}")
     private String applicationSubmittedTopic;
 
+    @Value("${tpms.kafka.application-activity-topic}")
+    private String applicationActivityTopic;
+
     /**
-     * Topic for planner-published emails.
+     * Kafka topic for planner-published events.
      */
     @Bean
     public NewTopic plannerPublishedTopic() {
@@ -35,7 +38,7 @@ public class KafkaConfig {
     }
 
     /**
-     * Topic for application-submitted emails.
+     * Kafka topic for application-submitted events.
      */
     @Bean
     public NewTopic applicationSubmittedTopic() {
@@ -47,11 +50,24 @@ public class KafkaConfig {
     }
 
     /**
-     * Producer used by KafkaPlannerEventPublisher.
+     * Kafka topic for application activity events.
+     */
+    @Bean
+    public NewTopic applicationActivityTopic() {
+        return TopicBuilder
+                .name(applicationActivityTopic)
+                .partitions(1)
+                .replicas(1)
+                .build();
+    }
+
+    /**
+     * KafkaTemplate used to publish background mail events.
      */
     @Bean
     public KafkaTemplate<String, Object> kafkaTemplate(
             ProducerFactory<String, Object> producerFactory) {
+
         return new KafkaTemplate<>(producerFactory);
     }
 }

@@ -1,8 +1,8 @@
 package T_And_P.Training_and_Placement.event;
 
-
 /**
- * Publishes background mail events. Kafka is the transport.
+ * Publishes background mail events.
+ * Kafka is used as the transport mechanism.
  */
 public interface PlannerEventPublisher {
 
@@ -15,4 +15,10 @@ public interface PlannerEventPublisher {
      * Publishes application-submitted mail work after a student applies.
      */
     void publishApplicationSubmitted(ApplicationSubmittedEvent event);
+
+    /**
+     * Publishes mail work after any application activity
+     * such as applied, selected, rejected, or cancelled.
+     */
+    void publishApplicationActivity(ApplicationActivityEvent event);
 }

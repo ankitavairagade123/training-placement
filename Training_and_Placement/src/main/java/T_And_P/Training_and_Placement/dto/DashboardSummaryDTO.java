@@ -1,0 +1,51 @@
+package T_And_P.Training_and_Placement.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class DashboardSummaryDTO {
+
+    private long totalCompanies;
+
+    private long totalStudents;
+
+    private long totalPlanners;
+
+    private long draftPlanners;
+
+    private long activePlanners;
+
+    private long rejectedPlanners;
+
+    private long inactivePlanners;
+
+    private long totalApplications;
+
+    private long appliedCount;
+
+    private long shortlistedCount;
+
+    private long interviewScheduledCount;
+
+    private long selectedCount;
+
+    private long rejectedCount;
+
+    private long cancelledCount;
+
+    private long offerAcceptedCount;
+
+    private List<CompanyDashboardDTO> companyWise;
+
+    private List<DashboardRecentApplicationDTO> recentApplications;
+
+    private List<DashboardUpcomingPlannerDTO> upcomingPlanners;
+}

@@ -11,5 +11,7 @@ public enum ApplicationStatus {
 
     REJECTED,
 
-    OFFER_ACCEPTED
+    OFFER_ACCEPTED,
+
+    CANCELLED
 }
