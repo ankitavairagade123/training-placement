@@ -406,3 +406,7 @@ Kafka broker: `localhost:9092`
 | Application activity | `application-activity` | `ApplicationActivityEventListener` | Applicant for applied, shortlisted, interview, selected, rejected, cancelled, offer accepted |
 
 Publish, apply, and status-update APIs still succeed if Kafka or mail fails.
+
+If Kafka send fails, mail is sent directly by `NotificationService` so the student still receives the update.
+
+To send a real inbox mail, set `spring.mail.host`, `spring.mail.username`, `spring.mail.password`, and `tpms.mail.from` in `application.properties`. If SMTP host is not set, the mail is logged only.
