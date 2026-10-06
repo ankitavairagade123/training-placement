@@ -38,6 +38,14 @@ public interface EligibilityMasterRepository
     Optional<EligibilityBean> getEligibilityById(
             @Param("id") Long id);
 
+    @Query(value = "SELECT id AS id, "
+            + "eligibility_type AS eligibilityType, "
+            + "status AS status "
+            + "FROM eligibility_master "
+            + "WHERE id IN (:ids)", nativeQuery = true)
+    List<EligibilityBean> getEligibilityByIds(
+            @Param("ids") List<Long> ids);
+
     @Query(value = "SELECT id "
             + "FROM eligibility_master "
             + "WHERE id = :id", nativeQuery = true)
@@ -59,5 +67,3 @@ public interface EligibilityMasterRepository
             @Param("eligibilityType") String eligibilityType,
             @Param("id") Long id);
 }
-
-

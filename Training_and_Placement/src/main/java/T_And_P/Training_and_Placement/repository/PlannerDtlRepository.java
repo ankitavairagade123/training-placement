@@ -16,19 +16,32 @@ public interface PlannerDtlRepository
         extends JpaRepository<TrainingAndPlacementPlannerDtl, Long> {
 
     @Query(value = "SELECT "
-            + "pd.planner_dtl_id AS id, "
-            + "em.id AS eligibilityId, "
-            + "em.eligibility_type AS eligibilityType, "
-            + "pd.criteria_value AS criteriaValue, "
-            + "pd.criteria_rule AS criteriaRule, "
-            + "pd.status AS status, "
-            + "pd.mandatory AS mandatory "
-            + "FROM training_and_placement_planner_dtl pd "
-            + "INNER JOIN eligibility_master em "
-            + "ON em.id = pd.eligibility_id "
-            + "WHERE pd.planner_hdr_id = :plannerId "
-            + "ORDER BY pd.planner_dtl_id",
+            + "planner_dtl_id AS id, "
+            + "planner_hdr_id AS plannerHdrId, "
+            + "eligibility_id AS eligibilityId, "
+            + "criteria_value AS criteriaValue, "
+            + "criteria_rule AS criteriaRule, "
+            + "status AS status, "
+            + "mandatory AS mandatory "
+            + "FROM training_and_placement_planner_dtl "
+            + "WHERE planner_hdr_id = :plannerId "
+            + "ORDER BY planner_dtl_id",
             nativeQuery = true)
     List<PlannerDtlBean> getPlannerDetails(
             @Param("plannerId") Long plannerId);
+
+    @Query(value = "SELECT "
+            + "planner_dtl_id AS id, "
+            + "planner_hdr_id AS plannerHdrId, "
+            + "eligibility_id AS eligibilityId, "
+            + "criteria_value AS criteriaValue, "
+            + "criteria_rule AS criteriaRule, "
+            + "status AS status, "
+            + "mandatory AS mandatory "
+            + "FROM training_and_placement_planner_dtl "
+            + "WHERE planner_hdr_id IN (:plannerIds) "
+            + "ORDER BY planner_hdr_id, planner_dtl_id",
+            nativeQuery = true)
+    List<PlannerDtlBean> getPlannerDetailsByPlannerIds(
+            @Param("plannerIds") List<Long> plannerIds);
 }

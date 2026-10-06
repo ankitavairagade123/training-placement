@@ -43,6 +43,22 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
             + "where student_id = :studentId", nativeQuery = true)
     Optional<StudentBean> getStudentById(@Param("studentId") Long studentId);
 
+    @Query(value = "select student_id as studentId, "
+            + "student_name as studentName, "
+            + "email as email, "
+            + "ssc_percentage as sscPercentage, "
+            + "hsc_percentage as hscPercentage, "
+            + "ug_cgpa as ugCgpa, "
+            + "attendance as attendance, "
+            + "active_backlogs as activeBacklogs, "
+            + "branch as branch, "
+            + "semester as semester, "
+            + "passing_year as passingYear, "
+            + "resume_path as resumePath "
+            + "from student "
+            + "where student_id in (:studentIds)", nativeQuery = true)
+    List<StudentBean> getStudentsByIds(@Param("studentIds") List<Long> studentIds);
+
     @Query(value = "select student_id from student where student_id = :studentId", nativeQuery = true)
     Optional<Long> existsStudentById(@Param("studentId") Long studentId);
 

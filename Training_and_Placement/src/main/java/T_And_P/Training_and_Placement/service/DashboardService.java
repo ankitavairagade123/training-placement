@@ -207,19 +207,60 @@ public class DashboardService {
 
     private List<DashboardRecentApplicationDTO> toRecentRows(List<ApplicationHdrBean> rows) {
         List<DashboardRecentApplicationDTO> result = new ArrayList<DashboardRecentApplicationDTO>();
-        if (rows == null) {
+        if (rows == null || rows.isEmpty()) {
             return result;
         }
+
+        List<Long> studentIds = new ArrayList<Long>();
+        List<Long> plannerIds = new ArrayList<Long>();
         for (ApplicationHdrBean row : rows) {
             if (row == null) {
                 continue;
             }
+            if (row.getStudentId() != null && !studentIds.contains(row.getStudentId())) {
+                studentIds.add(row.getStudentId());
+            }
+            if (row.getPlannerId() != null && !plannerIds.contains(row.getPlannerId())) {
+                plannerIds.add(row.getPlannerId());
+            }
+        }
+
+        Map<Long, StudentBean> studentsById = new HashMap<Long, StudentBean>();
+        if (!studentIds.isEmpty()) {
+            List<StudentBean> students = studentRepository.getStudentsByIds(studentIds);
+            if (students != null) {
+                for (StudentBean student : students) {
+                    if (student != null && student.getStudentId() != null) {
+                        studentsById.put(student.getStudentId(), student);
+                    }
+                }
+            }
+        }
+
+        Map<Long, PlannerHdrBean> plannersById = new HashMap<Long, PlannerHdrBean>();
+        if (!plannerIds.isEmpty()) {
+            List<PlannerHdrBean> planners = plannerRepository.getPlannersByIds(plannerIds);
+            if (planners != null) {
+                for (PlannerHdrBean planner : planners) {
+                    if (planner != null && planner.getId() != null) {
+                        plannersById.put(planner.getId(), planner);
+                    }
+                }
+            }
+        }
+
+        for (ApplicationHdrBean row : rows) {
+            if (row == null) {
+                continue;
+            }
+            StudentBean student = studentsById.get(row.getStudentId());
+            PlannerHdrBean planner = plannersById.get(row.getPlannerId());
             result.add(DashboardRecentApplicationDTO.builder()
                     .applicationId(row.getId())
                     .studentId(row.getStudentId())
-                    .studentName(row.getStudentName())
-                    .plannerName(row.getPlannerName())
-                    .companyName(row.getCompanyName())
+                    .studentName(student == null ? null : student.getStudentName())
+                    .plannerName(planner == null ? null : planner.getPlannerName())
+                    .companyName(planner == null ? null : planner.getCompanyName())
                     .applicationStatus(row.getApplicationStatus())
                     .appliedDate(row.getAppliedDate())
                     .build());

@@ -245,10 +245,7 @@ public class PlacementApplicationService {
         if (applications == null || applications.isEmpty()) {
             throw new PlacementApplicationException(messageUtil.badRequest("application.none.for.student"), HttpStatus.NOT_FOUND);
         }
-        List<PlacementApplicationHdrResponseDTO> response = applications.stream()
-                .filter(application -> application != null)
-                .map(this::toResponse)
-                .collect(Collectors.toList());
+        List<PlacementApplicationHdrResponseDTO> response = mapApplications(applications);
         log.info("getByStudentId() completed for studentId={}, count={}", studentId, response.size());
         return response;
     }
@@ -262,10 +259,7 @@ public class PlacementApplicationService {
         if (applications == null || applications.isEmpty()) {
             throw new PlacementApplicationException(messageUtil.badRequest("application.none.for.planner"), HttpStatus.NOT_FOUND);
         }
-        List<PlacementApplicationHdrResponseDTO> response = applications.stream()
-                .filter(application -> application != null)
-                .map(this::toResponse)
-                .collect(Collectors.toList());
+        List<PlacementApplicationHdrResponseDTO> response = mapApplications(applications);
         log.info("getApplicationsByPlannerId() completed for plannerId={}, count={}", plannerId, response.size());
         return response;
     }
@@ -418,9 +412,103 @@ public class PlacementApplicationService {
     }
 
     /**
-     * Maps application header projection and child answers to API response.
+     * Loads hdr first, then one dtl query, then student and planner names in batch.
+     */
+    private List<PlacementApplicationHdrResponseDTO> mapApplications(List<ApplicationHdrBean> applications) {
+        List<Long> applicationIds = new ArrayList<Long>();
+        List<Long> studentIds = new ArrayList<Long>();
+        List<Long> plannerIds = new ArrayList<Long>();
+        for (ApplicationHdrBean application : applications) {
+            if (application == null) {
+                continue;
+            }
+            if (application.getId() != null) {
+                applicationIds.add(application.getId());
+            }
+            if (application.getStudentId() != null && !studentIds.contains(application.getStudentId())) {
+                studentIds.add(application.getStudentId());
+            }
+            if (application.getPlannerId() != null && !plannerIds.contains(application.getPlannerId())) {
+                plannerIds.add(application.getPlannerId());
+            }
+        }
+
+        Map<Long, List<ApplicationDtlBean>> detailsByApplication = new HashMap<Long, List<ApplicationDtlBean>>();
+        if (!applicationIds.isEmpty()) {
+            List<ApplicationDtlBean> details =
+                    placementApplicationDtlRepository.getDetailsByApplicationIds(applicationIds);
+            if (details != null) {
+                for (ApplicationDtlBean detail : details) {
+                    if (detail == null || detail.getApplicationId() == null) {
+                        continue;
+                    }
+                    List<ApplicationDtlBean> list = detailsByApplication.get(detail.getApplicationId());
+                    if (list == null) {
+                        list = new ArrayList<ApplicationDtlBean>();
+                        detailsByApplication.put(detail.getApplicationId(), list);
+                    }
+                    list.add(detail);
+                }
+            }
+        }
+
+        Map<Long, StudentBean> studentsById = new HashMap<Long, StudentBean>();
+        if (!studentIds.isEmpty()) {
+            List<StudentBean> students = studentRepository.getStudentsByIds(studentIds);
+            if (students != null) {
+                for (StudentBean student : students) {
+                    if (student != null && student.getStudentId() != null) {
+                        studentsById.put(student.getStudentId(), student);
+                    }
+                }
+            }
+        }
+
+        Map<Long, PlannerHdrBean> plannersById = new HashMap<Long, PlannerHdrBean>();
+        if (!plannerIds.isEmpty()) {
+            List<PlannerHdrBean> planners = plannerRepository.getPlannersByIds(plannerIds);
+            if (planners != null) {
+                for (PlannerHdrBean planner : planners) {
+                    if (planner != null && planner.getId() != null) {
+                        plannersById.put(planner.getId(), planner);
+                    }
+                }
+            }
+        }
+
+        List<PlacementApplicationHdrResponseDTO> response = new ArrayList<PlacementApplicationHdrResponseDTO>();
+        for (ApplicationHdrBean application : applications) {
+            if (application == null) {
+                continue;
+            }
+            List<ApplicationDtlBean> details = detailsByApplication.get(application.getId());
+            response.add(toResponse(
+                    application,
+                    details == null ? Collections.<ApplicationDtlBean>emptyList() : details,
+                    studentsById.get(application.getStudentId()),
+                    plannersById.get(application.getPlannerId())));
+        }
+        return response;
+    }
+
+    /**
+     * Single-record path: hdr query already done, then dtl/student/planner loaded separately.
      */
     private PlacementApplicationHdrResponseDTO toResponse(ApplicationHdrBean application) {
+        if (application == null) {
+            return null;
+        }
+        List<PlacementApplicationHdrResponseDTO> mapped = mapApplications(Collections.singletonList(application));
+        return mapped.isEmpty() ? null : mapped.get(0);
+    }
+
+    /**
+     * Maps application header, already-loaded answers, student and planner to API response.
+     */
+    private PlacementApplicationHdrResponseDTO toResponse(ApplicationHdrBean application,
+                                                          List<ApplicationDtlBean> details,
+                                                          StudentBean student,
+                                                          PlannerHdrBean planner) {
         if (application == null) {
             return null;
         }
@@ -428,18 +516,18 @@ public class PlacementApplicationService {
         return PlacementApplicationHdrResponseDTO.builder()
                 .id(application.getId())
                 .studentId(application.getStudentId())
-                .studentName(application.getStudentName())
-                .email(application.getEmail())
+                .studentName(student == null ? null : student.getStudentName())
+                .email(student == null ? null : student.getEmail())
                 .plannerId(application.getPlannerId())
-                .plannerName(application.getPlannerName())
-                .companyName(application.getCompanyName())
+                .plannerName(planner == null ? null : planner.getPlannerName())
+                .companyName(planner == null ? null : planner.getCompanyName())
                 .resumePath(application.getResumePath())
                 .termsAccepted(application.getTermsAccepted())
                 .offerLetterPath(application.getOfferLetterPath())
                 .joiningLetterPath(application.getJoiningLetterPath())
                 .appliedDate(application.getAppliedDate())
                 .applicationStatus(MapperUtil.parseEnum(ApplicationStatus.class, application.getApplicationStatus()))
-                .applicationDetails(toDetailResponses(placementApplicationDtlRepository.getDetailsByApplicationId(application.getId())))
+                .applicationDetails(toDetailResponses(details))
                 .build();
     }
 

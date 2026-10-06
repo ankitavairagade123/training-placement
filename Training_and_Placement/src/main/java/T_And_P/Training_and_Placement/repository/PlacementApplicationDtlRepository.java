@@ -13,6 +13,7 @@ public interface PlacementApplicationDtlRepository
         extends JpaRepository<PlacementApplicationDtl, Long> {
 
     @Query(value = "SELECT id AS applicationDetailId, "
+            + "application_id AS applicationId, "
             + "field_name AS fieldName, "
             + "field_value AS fieldValue "
             + "FROM placement_application_dtl "
@@ -20,4 +21,14 @@ public interface PlacementApplicationDtlRepository
             + "ORDER BY id", nativeQuery = true)
     List<ApplicationDtlBean> getDetailsByApplicationId(
             @Param("applicationId") Long applicationId);
+
+    @Query(value = "SELECT id AS applicationDetailId, "
+            + "application_id AS applicationId, "
+            + "field_name AS fieldName, "
+            + "field_value AS fieldValue "
+            + "FROM placement_application_dtl "
+            + "WHERE application_id IN (:applicationIds) "
+            + "ORDER BY application_id, id", nativeQuery = true)
+    List<ApplicationDtlBean> getDetailsByApplicationIds(
+            @Param("applicationIds") List<Long> applicationIds);
 }

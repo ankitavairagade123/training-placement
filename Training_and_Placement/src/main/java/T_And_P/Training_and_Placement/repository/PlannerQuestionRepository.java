@@ -36,4 +36,28 @@ public interface PlannerQuestionRepository
             nativeQuery = true)
     List<QuestionOptionBean> getOptionsByPlannerId(
             @Param("plannerId") Long plannerId);
+
+    @Query(value = "SELECT question_id AS questionId, "
+            + "planner_id AS plannerId, "
+            + "question AS question, "
+            + "field_type AS fieldType, "
+            + "mandatory AS mandatory "
+            + "FROM planner_question "
+            + "WHERE planner_id IN (:plannerIds) "
+            + "ORDER BY planner_id, question_id", nativeQuery = true)
+    List<PlannerQuestionBean> getQuestionsByPlannerIds(
+            @Param("plannerIds") List<Long> plannerIds);
+
+    @Query(value = "SELECT qo.option_id AS optionId, "
+            + "qo.question_id AS questionId, "
+            + "qo.option_text AS optionText, "
+            + "qo.display_order AS displayOrder "
+            + "FROM question_option qo "
+            + "INNER JOIN planner_question pq "
+            + "ON pq.question_id = qo.question_id "
+            + "WHERE pq.planner_id IN (:plannerIds) "
+            + "ORDER BY qo.question_id, qo.display_order, qo.option_id",
+            nativeQuery = true)
+    List<QuestionOptionBean> getOptionsByPlannerIds(
+            @Param("plannerIds") List<Long> plannerIds);
 }

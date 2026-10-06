@@ -3,21 +3,25 @@ package T_And_P.Training_and_Placement.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import T_And_P.Training_and_Placement.bean.EligibilityBean;
 import T_And_P.Training_and_Placement.bean.PlannerDtlBean;
 import T_And_P.Training_and_Placement.bean.StudentBean;
 import T_And_P.Training_and_Placement.constant.CriteriaRule;
 import T_And_P.Training_and_Placement.constant.Status;
 import T_And_P.Training_and_Placement.dto.EligibilityCheckResponseDTO;
 import T_And_P.Training_and_Placement.exception.PlacementApplicationException;
+import T_And_P.Training_and_Placement.repository.EligibilityMasterRepository;
 import T_And_P.Training_and_Placement.repository.PlannerDtlRepository;
 import T_And_P.Training_and_Placement.repository.StudentRepository;
 import T_And_P.Training_and_Placement.repository.TrainingAndPlacementPlannerHdrRepository;
@@ -50,6 +54,7 @@ public class EligibilityValidationService {
     private final StudentRepository studentRepository;
     private final TrainingAndPlacementPlannerHdrRepository plannerHdrRepository;
     private final PlannerDtlRepository plannerDtlRepository;
+    private final EligibilityMasterRepository eligibilityMasterRepository;
     private final MessageUtil messageUtil;
 
     /**
@@ -147,6 +152,8 @@ public class EligibilityValidationService {
             return reasons;
         }
 
+        Map<Long, EligibilityBean> eligibilityById = mapEligibilityById(details);
+
         for (PlannerDtlBean detail : details) {
 
             if (detail == null) {
@@ -167,7 +174,11 @@ public class EligibilityValidationService {
                 continue;
             }
 
-            String type = normalize(detail.getEligibilityType());
+            EligibilityBean eligibility = eligibilityById.get(detail.getEligibilityId());
+            String eligibilityType = eligibility == null
+                    ? detail.getEligibilityType()
+                    : eligibility.getEligibilityType();
+            String type = normalize(eligibilityType);
             String configuredValue = detail.getCriteriaValue();
 
             CriteriaRule rule = MapperUtil.parseEnum(
@@ -203,7 +214,7 @@ public class EligibilityValidationService {
                 reasons.add(
                         messageUtil.get(
                                 "eligibility.field.missing",
-                                detail.getEligibilityType()
+                                eligibilityType
                         )
                 );
                 continue;
@@ -217,7 +228,7 @@ public class EligibilityValidationService {
             )) {
                 reasons.add(
                         buildReason(
-                                detail.getEligibilityType(),
+                                eligibilityType,
                                 rule,
                                 configuredValue,
                                 actual.display
@@ -233,6 +244,32 @@ public class EligibilityValidationService {
         );
 
         return reasons;
+    }
+
+    /**
+     * Loads eligibility master rows once for all planner detail ids.
+     */
+    private Map<Long, EligibilityBean> mapEligibilityById(List<PlannerDtlBean> details) {
+        Map<Long, EligibilityBean> eligibilityById = new HashMap<Long, EligibilityBean>();
+        List<Long> eligibilityIds = new ArrayList<Long>();
+        for (PlannerDtlBean detail : details) {
+            if (detail != null && detail.getEligibilityId() != null
+                    && !eligibilityIds.contains(detail.getEligibilityId())) {
+                eligibilityIds.add(detail.getEligibilityId());
+            }
+        }
+        if (eligibilityIds.isEmpty()) {
+            return eligibilityById;
+        }
+        List<EligibilityBean> eligibilityRows = eligibilityMasterRepository.getEligibilityByIds(eligibilityIds);
+        if (eligibilityRows != null) {
+            for (EligibilityBean eligibility : eligibilityRows) {
+                if (eligibility != null && eligibility.getId() != null) {
+                    eligibilityById.put(eligibility.getId(), eligibility);
+                }
+            }
+        }
+        return eligibilityById;
     }
 
     /**

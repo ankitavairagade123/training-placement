@@ -4,6 +4,8 @@ public interface PlannerDtlBean {
 
     Long getId();
 
+    Long getPlannerHdrId();
+
     Long getEligibilityId();
 
     String getEligibilityType();

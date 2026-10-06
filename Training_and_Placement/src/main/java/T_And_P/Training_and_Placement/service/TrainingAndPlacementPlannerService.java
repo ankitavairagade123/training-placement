@@ -22,7 +22,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -66,24 +70,7 @@ public class TrainingAndPlacementPlannerService {
             return Collections.emptyList();
         }
 
-        List<PlannerResponseDTO> response = projections.stream()
-                .map(planner ->
-                        convertToResponse(
-                                planner,
-                                plannerDtlRepository.getPlannerDetails(
-                                        planner.getId()
-                                ),
-                                plannerQuestionRepository
-                                        .getQuestionsByPlannerId(
-                                                planner.getId()
-                                        ),
-                                plannerQuestionRepository
-                                        .getOptionsByPlannerId(
-                                                planner.getId()
-                                        )
-                        )
-                )
-                .collect(Collectors.toList());
+        List<PlannerResponseDTO> response = mapPlanners(projections);
 
         log.info(
                 "getActivePlanners() completed, count={}",
@@ -577,15 +564,10 @@ public class TrainingAndPlacementPlannerService {
                                 )
                         );
 
-        PlannerResponseDTO response =
-                convertToResponse(
-                        planner,
-                        plannerDtlRepository.getPlannerDetails(id),
-                        plannerQuestionRepository
-                                .getQuestionsByPlannerId(id),
-                        plannerQuestionRepository
-                                .getOptionsByPlannerId(id)
-                );
+        List<PlannerResponseDTO> mapped =
+                mapPlanners(Collections.singletonList(planner));
+
+        PlannerResponseDTO response = mapped.get(0);
 
         log.info(
                 "getPlannerById() completed for id={}, status={}",
@@ -613,25 +595,7 @@ public class TrainingAndPlacementPlannerService {
             return Collections.emptyList();
         }
 
-        List<PlannerResponseDTO> response =
-                planners.stream()
-                        .map(planner ->
-                                convertToResponse(
-                                        planner,
-                                        plannerDtlRepository.getPlannerDetails(
-                                                planner.getId()
-                                        ),
-                                        plannerQuestionRepository
-                                                .getQuestionsByPlannerId(
-                                                        planner.getId()
-                                                ),
-                                        plannerQuestionRepository
-                                                .getOptionsByPlannerId(
-                                                        planner.getId()
-                                                )
-                                )
-                        )
-                        .collect(Collectors.toList());
+        List<PlannerResponseDTO> response = mapPlanners(planners);
 
         log.info(
                 "getAllPlanners() completed, count={}",
@@ -658,40 +622,50 @@ public class TrainingAndPlacementPlannerService {
         List<TrainingAndPlacementPlannerDtl> details =
                 new ArrayList<>();
 
+        Set<Long> eligibilityIds = new HashSet<Long>();
+        for (PlannerDtlDTO dtl : request.getPlannerDetails()) {
+            if (dtl == null) {
+                continue;
+            }
+            if (dtl.getEligibilityId() == null) {
+                throw new PlacementApplicationException(
+                        messageUtil.badRequest("eligibility.type.required.on.planner"),
+                        HttpStatus.BAD_REQUEST
+                );
+            }
+            eligibilityIds.add(dtl.getEligibilityId());
+        }
+
+        Map<Long, EligibilityBean> eligibilityById = new HashMap<Long, EligibilityBean>();
+        if (!eligibilityIds.isEmpty()) {
+            List<EligibilityBean> eligibilityRows =
+                    eligibilityMasterRepository.getEligibilityByIds(new ArrayList<Long>(eligibilityIds));
+            if (eligibilityRows != null) {
+                for (EligibilityBean eligibility : eligibilityRows) {
+                    if (eligibility != null && eligibility.getId() != null) {
+                        eligibilityById.put(eligibility.getId(), eligibility);
+                    }
+                }
+            }
+        }
+
         for (PlannerDtlDTO dtl : request.getPlannerDetails()) {
 
             if (dtl == null) {
                 continue;
             }
 
-            if (dtl.getEligibilityId() == null) {
+            EligibilityBean eligibility = eligibilityById.get(dtl.getEligibilityId());
+            if (eligibility == null) {
                 throw new PlacementApplicationException(
-                        messageUtil.badRequest(
-                                "eligibility.type.required.on.planner"
-                        ),
+                        messageUtil.badRequest("eligibility.not.found"),
                         HttpStatus.BAD_REQUEST
                 );
             }
 
-            EligibilityBean eligibility =
-                    eligibilityMasterRepository
-                            .getEligibilityById(dtl.getEligibilityId())
-                            .orElseThrow(() ->
-                                    new PlacementApplicationException(
-                                            messageUtil.badRequest(
-                                                    "eligibility.not.found"
-                                            ),
-                                            HttpStatus.BAD_REQUEST
-                                    )
-                            );
-
-            if (!Status.ACTIVE.name().equals(
-                    eligibility.getStatus()
-            )) {
+            if (!Status.ACTIVE.name().equals(eligibility.getStatus())) {
                 throw new PlacementApplicationException(
-                        messageUtil.badRequest(
-                                "eligibility.only.active"
-                        ),
+                        messageUtil.badRequest("eligibility.only.active"),
                         HttpStatus.BAD_REQUEST
                 );
             }
@@ -700,27 +674,12 @@ public class TrainingAndPlacementPlannerService {
                     TrainingAndPlacementPlannerDtl.builder()
                             .plannerHdr(planner)
                             .eligibilityMaster(
-                                    eligibilityMasterRepository
-                                            .getReferenceById(
-                                                    dtl.getEligibilityId()
-                                            )
+                                    eligibilityMasterRepository.getReferenceById(dtl.getEligibilityId())
                             )
                             .criteriaRule(dtl.getCriteriaRule())
-                            .criteriaValue(
-                                    MapperUtil.trimToNull(
-                                            dtl.getCriteriaValue()
-                                    )
-                            )
-                            .mandatory(
-                                    Boolean.TRUE.equals(
-                                            dtl.getMandatory()
-                                    )
-                            )
-                            .status(
-                                    dtl.getStatus() == null
-                                            ? Status.ACTIVE
-                                            : dtl.getStatus()
-                            )
+                            .criteriaValue(MapperUtil.trimToNull(dtl.getCriteriaValue()))
+                            .mandatory(Boolean.TRUE.equals(dtl.getMandatory()))
+                            .status(dtl.getStatus() == null ? Status.ACTIVE : dtl.getStatus())
                             .build()
             );
         }
@@ -1138,13 +1097,118 @@ public class TrainingAndPlacementPlannerService {
     }
 
     /**
+     * Loads eligibility, questions and options once for all planner ids, then maps in memory.
+     */
+    private List<PlannerResponseDTO> mapPlanners(List<PlannerHdrBean> planners) {
+        List<Long> plannerIds = new ArrayList<Long>();
+        for (PlannerHdrBean planner : planners) {
+            if (planner != null && planner.getId() != null) {
+                plannerIds.add(planner.getId());
+            }
+        }
+
+        Map<Long, List<PlannerDtlBean>> detailsByPlanner = new HashMap<Long, List<PlannerDtlBean>>();
+        Map<Long, List<PlannerQuestionBean>> questionsByPlanner = new HashMap<Long, List<PlannerQuestionBean>>();
+        Map<Long, EligibilityBean> eligibilityById = new HashMap<Long, EligibilityBean>();
+        List<QuestionOptionBean> options = Collections.emptyList();
+        if (!plannerIds.isEmpty()) {
+            List<PlannerDtlBean> detailRows = plannerDtlRepository.getPlannerDetailsByPlannerIds(plannerIds);
+            detailsByPlanner = groupPlannerDetails(detailRows);
+            eligibilityById = mapEligibilityById(detailRows);
+            questionsByPlanner = groupQuestions(plannerQuestionRepository.getQuestionsByPlannerIds(plannerIds));
+            options = plannerQuestionRepository.getOptionsByPlannerIds(plannerIds);
+        }
+
+        List<PlannerResponseDTO> response = new ArrayList<PlannerResponseDTO>();
+        for (PlannerHdrBean planner : planners) {
+            if (planner == null) {
+                continue;
+            }
+            List<PlannerDtlBean> details = detailsByPlanner.get(planner.getId());
+            List<PlannerQuestionBean> questions = questionsByPlanner.get(planner.getId());
+            response.add(convertToResponse(
+                    planner,
+                    details == null ? Collections.<PlannerDtlBean>emptyList() : details,
+                    questions == null ? Collections.<PlannerQuestionBean>emptyList() : questions,
+                    options,
+                    eligibilityById));
+        }
+        return response;
+    }
+
+    private Map<Long, EligibilityBean> mapEligibilityById(List<PlannerDtlBean> details) {
+        Map<Long, EligibilityBean> eligibilityById = new HashMap<Long, EligibilityBean>();
+        if (details == null || details.isEmpty()) {
+            return eligibilityById;
+        }
+        List<Long> eligibilityIds = new ArrayList<Long>();
+        for (PlannerDtlBean detail : details) {
+            if (detail != null && detail.getEligibilityId() != null
+                    && !eligibilityIds.contains(detail.getEligibilityId())) {
+                eligibilityIds.add(detail.getEligibilityId());
+            }
+        }
+        if (eligibilityIds.isEmpty()) {
+            return eligibilityById;
+        }
+        List<EligibilityBean> eligibilityRows = eligibilityMasterRepository.getEligibilityByIds(eligibilityIds);
+        if (eligibilityRows != null) {
+            for (EligibilityBean eligibility : eligibilityRows) {
+                if (eligibility != null && eligibility.getId() != null) {
+                    eligibilityById.put(eligibility.getId(), eligibility);
+                }
+            }
+        }
+        return eligibilityById;
+    }
+
+    private Map<Long, List<PlannerDtlBean>> groupPlannerDetails(List<PlannerDtlBean> rows) {
+        Map<Long, List<PlannerDtlBean>> grouped = new HashMap<Long, List<PlannerDtlBean>>();
+        if (rows == null) {
+            return grouped;
+        }
+        for (PlannerDtlBean row : rows) {
+            if (row == null || row.getPlannerHdrId() == null) {
+                continue;
+            }
+            List<PlannerDtlBean> list = grouped.get(row.getPlannerHdrId());
+            if (list == null) {
+                list = new ArrayList<PlannerDtlBean>();
+                grouped.put(row.getPlannerHdrId(), list);
+            }
+            list.add(row);
+        }
+        return grouped;
+    }
+
+    private Map<Long, List<PlannerQuestionBean>> groupQuestions(List<PlannerQuestionBean> rows) {
+        Map<Long, List<PlannerQuestionBean>> grouped = new HashMap<Long, List<PlannerQuestionBean>>();
+        if (rows == null) {
+            return grouped;
+        }
+        for (PlannerQuestionBean row : rows) {
+            if (row == null || row.getPlannerId() == null) {
+                continue;
+            }
+            List<PlannerQuestionBean> list = grouped.get(row.getPlannerId());
+            if (list == null) {
+                list = new ArrayList<PlannerQuestionBean>();
+                grouped.put(row.getPlannerId(), list);
+            }
+            list.add(row);
+        }
+        return grouped;
+    }
+
+    /**
      * Converts native-query planner projection plus child rows into the API response.
      */
     private PlannerResponseDTO convertToResponse(
             PlannerHdrBean planner,
             List<PlannerDtlBean> details,
             List<PlannerQuestionBean> questions,
-            List<QuestionOptionBean> options) {
+            List<QuestionOptionBean> options,
+            Map<Long, EligibilityBean> eligibilityById) {
 
         if (planner == null) {
             return null;
@@ -1169,6 +1233,10 @@ public class TrainingAndPlacementPlannerService {
                     continue;
                 }
 
+                EligibilityBean eligibility = eligibilityById == null
+                        ? null
+                        : eligibilityById.get(dtl.getEligibilityId());
+
                 plannerDetails.add(
                         PlannerDtlDTO.builder()
                                 .id(dtl.getId())
@@ -1176,7 +1244,9 @@ public class TrainingAndPlacementPlannerService {
                                         dtl.getEligibilityId()
                                 )
                                 .eligibilityType(
-                                        dtl.getEligibilityType()
+                                        eligibility == null
+                                                ? dtl.getEligibilityType()
+                                                : eligibility.getEligibilityType()
                                 )
                                 .criteriaValue(
                                         dtl.getCriteriaValue()
